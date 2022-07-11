@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+docker run --rm -it --net host \
+	-e CODECEPT_URL=$DDEV_PRIMARY_URL \
+	-v $PWD/tests:/tests/tests \
+	-v $PWD/screenshots:/tests/output \
+	nycedcmis/wordpress-codeceptjs:3.2.3 codeceptjs run --steps
