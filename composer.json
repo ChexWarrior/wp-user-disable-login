@@ -1,0 +1,64 @@
+{
+  "name": "nycedc/test",
+  "description": "Project template for Waterfront Navigator WordPress site.",
+  "type": "project",
+  "license": "proprietary",
+  "authors": [
+      {
+        "name": "Andrew Lehman",
+        "role": "Web Developer"
+      },
+      {
+        "name": "Alex Ho",
+        "role": "Lead Developer"
+      }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://wpackagist.org"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "config": {
+    "discard-changes": true,
+    "sort-packages": true,
+    "allow-plugins": {
+      "composer/installers": true,
+      "johnpbloch/wordpress-core-installer": true,
+      "drupal-composer/preserve-paths": true
+    }
+  },
+  "require": {
+    "composer/installers": "^1.2",
+    "drupal-composer/preserve-paths": "0.1.*",
+    "johnpbloch/wordpress-core": "^6.0",
+    "johnpbloch/wordpress-core-installer": "^2.0",
+    "wpackagist-plugin/user-role-editor": "^4.55.1"
+  },
+  "require-dev": {
+    "wpackagist-plugin/debug-bar": "^1.0.1",
+    "wpackagist-plugin/query-monitor": "^3.6.0"
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "./sync-packages.sh"
+    ],
+    "post-update-cmd": [
+      "./sync-packages.sh"
+    ]
+  },
+  "extra": {
+    "installer-paths": {
+      "packages/plugins/{$name}/": ["type:wordpress-plugin"],
+      "packages/themes/{$name}/": ["type:wordpress-theme"]
+    },
+    "preserve-paths": [
+      "web/wp-config.php",
+      "web/wp-content/uploads",
+      "web/wp-content/plugins/user-disable"
+    ],
+    "wordpress-install-dir": "web"
+  }
+}
