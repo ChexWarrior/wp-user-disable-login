@@ -1,0 +1,20 @@
+# Ignore folders and files created in build process
+/vendor/
+/screenshots/
+/packages/
+
+# To ensure that custom plugins and themes are included in repo but
+# not other WordPress files we have to ensure the entire path to the
+# directories we want to ignore are included, but no other files in
+# those directories. New custom themes/plugins will need to added
+# in this way!
+# See https://stackoverflow.com/a/5534865
+!web/
+web/*
+!web/wp-config.php
+!web/wp-content/
+web/wp-content/*
+!web/wp-content/plugins
+web/wp-content/plugins/*
+!web/wp-content/plugins/user-disable
+
