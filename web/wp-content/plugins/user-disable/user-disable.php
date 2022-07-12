@@ -48,6 +48,22 @@ function usermeta_form_field_disabled(WP_User $user)
 	<?php endif;
 }
 
+// Update actual user disabled metadata
+function update_disable_metadata($is_disabled, $user_id)
+{
+	// Logout target user when they are disabled
+	if ($is_disabled) {
+		$sessions = WP_Session_Tokens::get_instance($user_id);
+		$sessions->destroy_all();
+	}
+
+	return update_user_meta(
+		$user_id,
+		'disabled',
+		$is_disabled
+	);
+}
+
 // Ensure meta data is updated and disabled users are logged out
 function usermeta_form_field_disabled_update(int $user_id): int|bool
 {
@@ -57,17 +73,7 @@ function usermeta_form_field_disabled_update(int $user_id): int|bool
 
 	$disabled = $_POST['disabled'] === 'on';
 
-	// Logout target user when they are disabled
-	if ($disabled) {
-		$sessions = WP_Session_Tokens::get_instance($user_id);
-		$sessions->destroy_all();
-	}
-
-	return update_user_meta(
-		$user_id,
-		'disabled',
-		$disabled
-	);
+	return update_disable_metadata($disabled, $user_id);
 }
 
 add_action('show_user_profile', 'User_Disable\usermeta_form_field_disabled');
@@ -117,6 +123,20 @@ add_filter('manage_users_columns', 'User_Disable\add_user_disabled_column');
 add_filter('manage_users_custom_column', 'User_Disable\show_user_disabled_column', 10, 3);
 
 // Add User Disable/Enable Bulk Actions
+function enable_disable_users($action, $user_ids): int
+{
+	$count = 0;
+	foreach ($user_ids as $id) {
+		update_disable_metadata(
+			$action === 'disable_user',
+			$id
+		);
+		$count += 1;
+	}
+
+	return $count;
+}
+
 function register_enable_disable_bulk_actions($bulk_actions)
 {
 	$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
@@ -125,7 +145,20 @@ function register_enable_disable_bulk_actions($bulk_actions)
 	return $bulk_actions;
 }
 
+function handle_enable_disable_bulk_actions($redirect_url, $action_name, $user_ids)
+{
+	if ($action_name === 'disable_user' || $action_name === 'enable_user') {
+		$count = enable_disable_users($action_name, $user_ids);
+
+		return add_query_arg($action_name, $count, $redirect_url);
+	}
+
+	return $redirect_url;
+}
+
 add_filter('bulk_actions-users', 'User_Disable\register_enable_disable_bulk_actions');
+
+add_filter('handle_bulk_actions-users', 'User_Disable\handle_enable_disable_bulk_actions', 10, 3);
 
 // Handle Activate and Uninstall plugin actions
 function uninstall_plugin()
