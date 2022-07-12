@@ -18,6 +18,7 @@ hooks:
     - exec: composer install
     - exec: wp --path=web core install --url=user-disable-test.ddev.site:8443 --title=Test --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email
     - exec: wp --path=web plugin activate user-disable
+    - exec: wp --path=web user create arthur arthur@example.com --role=author --user_pass=password
 
 use_dns_when_possible: true
 composer_version: "2"
