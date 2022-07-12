@@ -184,18 +184,33 @@ add_filter('bulk_actions-users', 'User_Disable\register_enable_disable_bulk_acti
 add_filter('handle_bulk_actions-users', 'User_Disable\handle_enable_disable_bulk_actions', 10, 3);
 
 // Add WP-CLI Commands for enabling/disabling users
-function cli_disable_users($args)
+function cli_disable_users($user_ids)
 {
-	$count = enable_disable_users('disable_user', $args);
+	cli_verify_user_ids($user_ids);
+	$count = enable_disable_users('disable_user', $user_ids);
 
 	WP_CLI::success("Disabled $count user(s)");
 }
 
-function cli_enable_users($args)
+function cli_enable_users($user_ids)
 {
-	$count = enable_disable_users('enable_user', $args);
+	cli_verify_user_ids($user_ids);
+	$count = enable_disable_users('enable_user', $user_ids);
 
 	WP_CLI::success("Enabled $count user(s)");
+}
+
+function cli_verify_user_ids($args)
+{
+	if (!is_array($args)) {
+		WP_CLI::error("Must pass array of user ids!");
+	}
+
+	foreach ($args as $arg) {
+		if (intval($arg) === 0 || $arg < 1) {
+			WP_CLI::error('User ids must be positive integers!');
+		}
+	}
 }
 
 if (defined('WP_CLI') && !empty(WP_CLI)) {
