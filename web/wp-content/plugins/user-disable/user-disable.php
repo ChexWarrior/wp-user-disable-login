@@ -16,6 +16,7 @@
 namespace User_Disable;
 
 use WP_Error;
+use WP_Session_Tokens;
 use WP_User;
 
 function usermeta_form_field_disabled(WP_User $user)
@@ -53,6 +54,12 @@ function usermeta_form_field_disabled_update(int $user_id): int|bool
 	}
 
 	$disabled = $_POST['disabled'] === 'on';
+
+	// Logout target user when they are disabled
+	if ($disabled) {
+		$sessions = WP_Session_Tokens::get_instance($user_id);
+		$sessions->destroy_all();
+	}
 
 	return update_user_meta(
 		$user_id,
