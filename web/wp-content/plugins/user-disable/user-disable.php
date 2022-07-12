@@ -89,7 +89,7 @@ add_filter('wp_authenticate_user', 'User_Disable\check_if_user_disabled', 10, 2)
 function uninstall_plugin()
 {
 	// Remove disabled user metadata from all users
-	delete_metadata('user', '-1', 'disabled', null, true);
+	delete_metadata('user', -1, 'disabled', null, true);
 }
 
 register_uninstall_hook(__FILE__, 'User_Disable\uninstall_plugin');
