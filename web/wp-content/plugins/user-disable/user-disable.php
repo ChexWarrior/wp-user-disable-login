@@ -86,6 +86,32 @@ function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_Us
 
 add_filter('wp_authenticate_user', 'User_Disable\check_if_user_disabled', 10, 2);
 
+function add_user_disabled_column(array $columns): array
+{
+	$check_column = $columns['cb'];
+	unset($columns['cb']);
+	return array_merge([
+		'cb' => $check_column,
+		'user_disabled' => 'User Disabled'
+	],
+	$columns);
+}
+
+function show_user_disabled_column($value, $column_name, $user_id)
+{
+	if ($column_name === 'user_disabled') {
+		$user_data = get_userdata($user_id);
+		return $user_data->get('disabled') === "1"
+			? '<strong class="file-error">Disabled</strong>' : '';
+	}
+
+	return $value;
+}
+
+add_filter('manage_users_columns', 'User_Disable\add_user_disabled_column');
+
+add_filter('manage_users_custom_column', 'User_Disable\show_user_disabled_column', 10, 3);
+
 function uninstall_plugin()
 {
 	// Remove disabled user metadata from all users
