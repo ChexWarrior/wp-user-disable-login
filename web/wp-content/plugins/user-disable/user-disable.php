@@ -13,7 +13,7 @@
  * @package         User_Disable
  */
 
-namespace Nycedc;
+namespace User_Disable;
 
 use WP_User;
 
@@ -33,7 +33,7 @@ function usermeta_form_field_disabled(WP_User $user)
 					id="disabled"
 					name="disabled"
 					<?php
-						esc_attr(get_user_meta($user->ID, 'disabled', false))
+						esc_attr(get_user_meta($user->ID, 'disabled', true))
 							? 'checked' : ''
 					?>
 					title="If checked user will not be able to login"
@@ -62,7 +62,7 @@ function usermeta_form_field_disabled_update(int $user_id)
 	);
 }
 
-add_action('show_user_profile', 'usermeta_form_field_disabled');
-add_action('edit_user_profile', 'usermeta_form_field_disabled');
-add_action('personal_options_update', 'usermeta_form_field_disabled_update');
-add_action('edit_user_profile_update', 'usermeta_form_field_disabled_update');
+add_action('show_user_profile', 'User_Disable\usermeta_form_field_disabled');
+add_action('edit_user_profile', 'User_Disable\usermeta_form_field_disabled');
+add_action('personal_options_update', 'User_Disable\usermeta_form_field_disabled_update');
+add_action('edit_user_profile_update', 'User_Disable\usermeta_form_field_disabled_update');
