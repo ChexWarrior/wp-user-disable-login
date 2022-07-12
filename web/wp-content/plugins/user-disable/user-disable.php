@@ -156,6 +156,28 @@ function handle_enable_disable_bulk_actions($redirect_url, $action_name, $user_i
 	return $redirect_url;
 }
 
+function enable_disable_bulk_notification() {
+	if (!empty( $_REQUEST['disable_user'])) {
+		$count = intval($_REQUEST['disable_user']);
+		echo <<<HTML
+		<div class="notice notice-info is-dismissible">
+			<p>Disabled $count user(s).</p>
+		</div>
+		HTML;
+	}
+
+	if (!empty($_REQUEST['enable_user'])) {
+		$count = intval($_REQUEST['enable_user']);
+		echo <<<HTML
+		<div class="notice notice-info is-dismissible">
+			<p>Enabled $count user(s).</p>
+		</div>
+		HTML;
+	}
+}
+
+add_action('admin_notices', 'User_Disable\enable_disable_bulk_notification');
+
 add_filter('bulk_actions-users', 'User_Disable\register_enable_disable_bulk_actions');
 
 add_filter('handle_bulk_actions-users', 'User_Disable\handle_enable_disable_bulk_actions', 10, 3);
