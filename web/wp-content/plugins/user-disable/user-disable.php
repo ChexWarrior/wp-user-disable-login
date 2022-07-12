@@ -21,7 +21,7 @@ use WP_User;
 
 function usermeta_form_field_disabled(WP_User $user)
 {
-	?>
+	if (current_user_can('disable_users', $user->ID)): ?>
 	<h3>Disable User Login</h3>
 	<table class="form-table">
 		<tr>
@@ -44,7 +44,7 @@ function usermeta_form_field_disabled(WP_User $user)
 			</td>
 		</tr>
 	</table>
-	<?php
+	<?php endif;
 }
 
 function usermeta_form_field_disabled_update(int $user_id): int|bool
