@@ -90,6 +90,19 @@ function uninstall_plugin()
 {
 	// Remove disabled user metadata from all users
 	delete_metadata('user', -1, 'disabled', null, true);
+
+	// Remove disable users capability
+	$role = get_role('administrator');
+	$role->remove_cap('disable_users');
 }
 
 register_uninstall_hook(__FILE__, 'User_Disable\uninstall_plugin');
+
+function activate_plugin()
+{
+	// Give capability for disabling users to admins only
+	$role = get_role('administrator');
+	$role->add_cap('disable_users', true);
+}
+
+register_activation_hook(__FILE__, 'User_Disable\activate_plugin');
