@@ -18,6 +18,7 @@ namespace User_Disable;
 use WP_Error;
 use WP_Session_Tokens;
 use WP_User;
+use WP_CLI;
 
 // Add disabled field to user edit form
 function usermeta_form_field_disabled(WP_User $user)
@@ -181,6 +182,17 @@ add_action('admin_notices', 'User_Disable\enable_disable_bulk_notification');
 add_filter('bulk_actions-users', 'User_Disable\register_enable_disable_bulk_actions');
 
 add_filter('handle_bulk_actions-users', 'User_Disable\handle_enable_disable_bulk_actions', 10, 3);
+
+// Add WP-CLI Commands for enabling/disabling users
+function cli_enable_disable_users($args)
+{
+	echo 'User IDs: ' . implode(' ', $args);
+}
+
+if (defined('WP_CLI') && !empty(WP_CLI)) {
+	WP_CLI::add_command('user enable', 'User_Disable\cli_enable_disable_users');
+	WP_CLI::add_command('user disable', 'User_Disable\cli_enable_disable_users');
+}
 
 // Handle Activate and Uninstall plugin actions
 function uninstall_plugin()
