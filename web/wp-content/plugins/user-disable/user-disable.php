@@ -46,7 +46,7 @@ function usermeta_form_field_disabled(WP_User $user)
 	<?php
 }
 
-function usermeta_form_field_disabled_update(int $user_id)
+function usermeta_form_field_disabled_update(int $user_id): int|bool
 {
 	if (!current_user_can('edit_user', $user_id)) {
 		return false;
@@ -66,7 +66,7 @@ add_action('edit_user_profile', 'User_Disable\usermeta_form_field_disabled');
 add_action('personal_options_update', 'User_Disable\usermeta_form_field_disabled_update');
 add_action('edit_user_profile_update', 'User_Disable\usermeta_form_field_disabled_update');
 
-function check_if_user_disabled(WP_User|WP_Error $user, string $password)
+function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
 {
 	$disabled = get_user_meta($user->ID, 'disabled', true) === "1";
 
