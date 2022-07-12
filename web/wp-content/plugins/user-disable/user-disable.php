@@ -202,7 +202,7 @@ function cli_enable_users($user_ids)
 
 function cli_verify_user_ids($args)
 {
-	if (!is_array($args)) {
+	if (!is_array($args) || empty($args)) {
 		WP_CLI::error("Must pass array of user ids!");
 	}
 
