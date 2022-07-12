@@ -15,9 +15,8 @@
 
 namespace User_Disable;
 
+use WP_Error;
 use WP_User;
-
-// Add field, setup CRUD on user page
 
 function usermeta_form_field_disabled(WP_User $user)
 {
@@ -66,3 +65,16 @@ add_action('show_user_profile', 'User_Disable\usermeta_form_field_disabled');
 add_action('edit_user_profile', 'User_Disable\usermeta_form_field_disabled');
 add_action('personal_options_update', 'User_Disable\usermeta_form_field_disabled_update');
 add_action('edit_user_profile_update', 'User_Disable\usermeta_form_field_disabled_update');
+
+function check_if_user_disabled(WP_User|WP_Error $user, string $password)
+{
+	$disabled = get_user_meta($user->ID, 'disabled', true) === "1";
+
+	if ($disabled) {
+		return new WP_Error('user_disabled', 'User is disabled', $user->ID);
+	}
+
+	return $user;
+}
+
+add_filter('wp_authenticate_user', 'User_Disable\check_if_user_disabled', 10, 2);
