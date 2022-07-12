@@ -33,7 +33,7 @@ function usermeta_form_field_disabled(WP_User $user)
 					id="disabled"
 					name="disabled"
 					<?php
-						esc_attr(get_user_meta($user->ID, 'disabled', true))
+						echo esc_attr(get_user_meta($user->ID, 'disabled', true))
 							? 'checked' : ''
 					?>
 					title="If checked user will not be able to login"
@@ -53,7 +53,7 @@ function usermeta_form_field_disabled_update(int $user_id)
 		return false;
 	}
 
-	$disabled = $_POST['disabled'] === 'true';
+	$disabled = $_POST['disabled'] === 'on';
 
 	return update_user_meta(
 		$user_id,
