@@ -19,6 +19,7 @@ use WP_Error;
 use WP_Session_Tokens;
 use WP_User;
 
+// Add disabled field to user edit form
 function usermeta_form_field_disabled(WP_User $user)
 {
 	if (current_user_can('disable_users', $user->ID)): ?>
@@ -47,6 +48,7 @@ function usermeta_form_field_disabled(WP_User $user)
 	<?php endif;
 }
 
+// Ensure meta data is updated and disabled users are logged out
 function usermeta_form_field_disabled_update(int $user_id): int|bool
 {
 	if (!current_user_can('edit_user', $user_id)) {
@@ -73,6 +75,7 @@ add_action('edit_user_profile', 'User_Disable\usermeta_form_field_disabled');
 add_action('personal_options_update', 'User_Disable\usermeta_form_field_disabled_update');
 add_action('edit_user_profile_update', 'User_Disable\usermeta_form_field_disabled_update');
 
+// Ensure we check disabled meta when a user logs in
 function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
 {
 	$disabled = get_user_meta($user->ID, 'disabled', true) === "1";
@@ -86,6 +89,7 @@ function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_Us
 
 add_filter('wp_authenticate_user', 'User_Disable\check_if_user_disabled', 10, 2);
 
+// Show User Disabled Column
 function add_user_disabled_column(array $columns): array
 {
 	$check_column = $columns['cb'];
@@ -112,6 +116,11 @@ add_filter('manage_users_columns', 'User_Disable\add_user_disabled_column');
 
 add_filter('manage_users_custom_column', 'User_Disable\show_user_disabled_column', 10, 3);
 
+// Add User Disable/Enable Bulk Actions
+
+
+
+// Handle Activate and Uninstall plugin actions
 function uninstall_plugin()
 {
 	// Remove disabled user metadata from all users
