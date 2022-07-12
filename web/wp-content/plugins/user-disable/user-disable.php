@@ -184,14 +184,23 @@ add_filter('bulk_actions-users', 'User_Disable\register_enable_disable_bulk_acti
 add_filter('handle_bulk_actions-users', 'User_Disable\handle_enable_disable_bulk_actions', 10, 3);
 
 // Add WP-CLI Commands for enabling/disabling users
-function cli_enable_disable_users($args)
+function cli_disable_users($args)
 {
-	echo 'User IDs: ' . implode(' ', $args);
+	$count = enable_disable_users('disable_user', $args);
+
+	WP_CLI::success("Disabled $count user(s)");
+}
+
+function cli_enable_users($args)
+{
+	$count = enable_disable_users('enable_user', $args);
+
+	WP_CLI::success("Enabled $count user(s)");
 }
 
 if (defined('WP_CLI') && !empty(WP_CLI)) {
-	WP_CLI::add_command('user enable', 'User_Disable\cli_enable_disable_users');
-	WP_CLI::add_command('user disable', 'User_Disable\cli_enable_disable_users');
+	WP_CLI::add_command('user enable', 'User_Disable\cli_enable_users');
+	WP_CLI::add_command('user disable', 'User_Disable\cli_disable_users');
 }
 
 // Handle Activate and Uninstall plugin actions
