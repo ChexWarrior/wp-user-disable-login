@@ -117,8 +117,15 @@ add_filter('manage_users_columns', 'User_Disable\add_user_disabled_column');
 add_filter('manage_users_custom_column', 'User_Disable\show_user_disabled_column', 10, 3);
 
 // Add User Disable/Enable Bulk Actions
+function register_enable_disable_bulk_actions($bulk_actions)
+{
+	$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
+	$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
 
+	return $bulk_actions;
+}
 
+add_filter('bulk_actions-users', 'User_Disable\register_enable_disable_bulk_actions');
 
 // Handle Activate and Uninstall plugin actions
 function uninstall_plugin()
