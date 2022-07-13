@@ -1,5 +1,3 @@
-const { expect } = require('@playwright/test');
-
 /**
  * Class for logging user into and out of WordPress site
  */
@@ -16,8 +14,6 @@ class UserAuth {
     await this.page.locator('#user_login').fill(username);
     await this.page.locator('#user_pass').fill(password);
     await this.page.locator('#wp-submit').click();
-    const accountMenu = this.page.locator('#wp-admin-bar-my-account');
-    await expect(accountMenu).toBeVisible();
   }
 
   async logout() {
@@ -25,7 +21,6 @@ class UserAuth {
     const logoutUrl = await logoutLink.getAttribute('href');
     await this.page.goto(logoutUrl);
     const url = this.page.url();
-    await expect(/\?loggedout\=true/.test(url)).toBeTruthy();
   }
 }
 
