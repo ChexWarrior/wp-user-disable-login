@@ -1,6 +1,9 @@
 const { UserAuth } = require('./models/userAuth.js');
 const { test, expect } = require('./fixture.js');
 
+const adminUsername = 'admin';
+const authorUserId = 2;
+
 // Test that a disabled user cannot login
 
 // Test that a disabled user loses their current session
@@ -9,17 +12,14 @@ const { test, expect } = require('./fixture.js');
 
 // Test that admins cannot be disabled
 
-// Test that only admins can disable a user
-test('Only Admins can disable another user', async ({ userProfile, page }) => {
-  await userProfile.login('admin');
-
-  // Go to author user profile page
-  await userProfile.disableUser(2);
-  const checked = await userProfile.disabledCheckbox.isChecked();
-  const message = await userProfile.page.locator('#message').innerText();
-
-  await expect(message.includes('User updated')).toBeTruthy();
+test('Admins can disable and enable another user', async ({ userProfile, page }) => {
+  await userProfile.login(adminUsername);
+  await userProfile.disableUser(authorUserId);
+  let checked = await userProfile.disabledCheckbox.isChecked();
   await expect(checked).toBeTruthy();
+  await userProfile.enableUser(authorUserId);
+  checked = await userProfile.disabledCheckbox.isChecked();
+  await expect(checked).toBeFalsy();
 });
 
-// Test that only admins can enable a user
+
