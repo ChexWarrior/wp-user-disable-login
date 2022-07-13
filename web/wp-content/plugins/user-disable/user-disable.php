@@ -49,6 +49,12 @@ function usermeta_form_field_disabled(WP_User $user)
 // Update actual user disabled metadata
 function update_disable_metadata($is_disabled, $user_id)
 {
+	// Administrators cannot be disabled
+	$user = get_userdata($user_id);
+	if (in_array('administrator', $user->roles)) {
+		return false;
+	}
+
 	// Logout target user when they are disabled
 	if ($is_disabled) {
 		$sessions = WP_Session_Tokens::get_instance($user_id);
