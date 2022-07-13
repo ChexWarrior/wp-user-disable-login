@@ -6,30 +6,24 @@ const { expect } = require('@playwright/test');
 class UserAuth {
   /**
    * @param  {import('@playwright/test').Page} page
-   * @param {string} username
-   * @param {string} password
    */
-  constructor(page, username, password = 'password') {
+  constructor(page) {
     this.page = page;
-    this.username = username;
-    this.password = password;
-    this.usernameInput = this.page.locator('#user_login');
-    this.passwordInput = this.page.locator('#user_pass');
-    this.loginSubmit = this.page.locator('#wp-submit');
   }
 
-  async login() {
+  async login(username, password = 'password') {
     await this.page.goto('/wp-login.php');
-    this.usernameInput.fill(this.username);
-    this.passwordInput.fill(this.password);
-    this.loginSubmit.click();
+    await this.page.locator('#user_login').fill(username);
+    await this.page.locator('#user_pass').fill(password);
+    await this.page.locator('#wp-submit').click();
     const accountMenu = this.page.locator('#wp-admin-bar-my-account');
     await expect(accountMenu).toBeVisible();
   }
 
   async logout() {
-    const logoutLink = this.page.locator('#wp-admin-bar-logout');
-    logoutLink.click();
+    const logoutLink = await this.page.locator('#wp-admin-bar-logout a.ab-item');
+    const logoutUrl = await logoutLink.getAttribute('href');
+    await this.page.goto(logoutUrl);
     const url = this.page.url();
     await expect(/\?loggedout\=true/.test(url)).toBeTruthy();
   }
