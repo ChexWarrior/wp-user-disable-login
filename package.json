@@ -1,0 +1,25 @@
+{
+  "name": "user-disable-plugin",
+  "version": "1.0.0",
+  "description": "## Description This plugin simply allows administrators to enable or disable other user accounts.  If a user is disabled they will be unable to login to the site (and any existing sessions between the site and that user will be destroyed).",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/nycedc/user-disable-plugin.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://bitbucket.org/nycedc/user-disable-plugin/issues"
+  },
+  "homepage": "https://bitbucket.org/nycedc/user-disable-plugin#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.23.3"
+  }
+}
