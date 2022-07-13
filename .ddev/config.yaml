@@ -16,7 +16,6 @@ mutagen_enabled: false
 hooks:
   post-start:
     - exec: composer install
-    - exec: npm install
     - exec: wp --path=web core install --url=user-disable-test.ddev.site:8443 --title=Test --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email
     - exec: wp --path=web plugin activate user-disable
     - exec: wp --path=web user create arthur arthur@example.com --role=author --user_pass=password
