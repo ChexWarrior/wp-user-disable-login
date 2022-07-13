@@ -4,6 +4,7 @@ const config = {
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     baseURL: 'https://user-disable-test.ddev.site:8443',
+    testMatch: 'tests/*.spec.js',
   }
 };
 
