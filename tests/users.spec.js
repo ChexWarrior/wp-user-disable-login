@@ -14,9 +14,7 @@ test('Only Admins can disable another user', async ({ userProfile, page }) => {
   await userProfile.login('admin');
 
   // Go to author user profile page
-  await userProfile.gotoUserProfile(2);
-  await userProfile.disabledCheckbox.check();
-  await userProfile.updateButton.click();
+  await userProfile.disableUser(2);
   const checked = await userProfile.disabledCheckbox.isChecked();
   const message = await userProfile.page.locator('#message').innerText();
 
