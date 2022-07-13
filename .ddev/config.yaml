@@ -27,7 +27,7 @@ web_environment:
 - XDEBUG_CONFIG=mode=debug log=/tmp/xdebug-test.log start_with_request=yes
 # Linux Xdebug Setup
 #- XDEBUG_CONFIG=mode=debug client_host=172.17.0.1 log=/tmp/xdebug-test.log start_with_request=yes
-nodejs_version: "14"
+nodejs_version: "16"
 
 # Key features of ddev's config.yaml:
 
