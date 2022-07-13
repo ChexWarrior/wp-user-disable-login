@@ -17,7 +17,7 @@ class UserAuth {
   }
 
   async logout() {
-    const logoutLink = await this.page.locator('#wp-admin-bar-logout a.ab-item');
+    const logoutLink = this.page.locator('#wp-admin-bar-logout a.ab-item');
     const logoutUrl = await logoutLink.getAttribute('href');
     await this.page.goto(logoutUrl);
     const url = this.page.url();

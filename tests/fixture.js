@@ -1,11 +1,11 @@
 const { test: base, expect } = require('@playwright/test');
-const { UserAuth } = require('./models/userAuth.js');
+const { UserProfile } = require('./models/userProfile.js');
 
 exports.test = base.extend({
-  userAuth: async ({ page }, use) => {
-    const userAuthService = new UserAuth(page);
-    await use(userAuthService);
-  }
+  userProfile: async({ page }, use) => {
+    const userProfile = new UserProfile(page);
+    use(userProfile);
+  },
 });
 
 exports.expect = expect;
