@@ -1,6 +1,9 @@
 const { expect } = require('@playwright/test');
 
-class LoginPage {
+/**
+ * Class for logging user into and out of WordPress site
+ */
+class UserAuth {
   /**
    * @param  {import('@playwright/test').Page} page
    * @param {string} username
@@ -15,14 +18,21 @@ class LoginPage {
     this.loginSubmit = this.page.locator('#wp-submit');
   }
 
-  login() {
-    this.page.goto('/wp-login.php');
+  async login() {
+    await this.page.goto('/wp-login.php');
     this.usernameInput.fill(this.username);
     this.passwordInput.fill(this.password);
     this.loginSubmit.click();
     const accountMenu = this.page.locator('#wp-admin-bar-my-account');
-    expect(accountMenu).toBeVisible();
+    await expect(accountMenu).toBeVisible();
+  }
+
+  async logout() {
+    const logoutLink = this.page.locator('#wp-admin-bar-logout');
+    logoutLink.click();
+    const url = this.page.url();
+    await expect(/\?loggedout\=true/.test(url)).toBeTruthy();
   }
 }
 
-exports.LoginPage = LoginPage;
+exports.UserAuth = UserAuth;
