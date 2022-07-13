@@ -21,8 +21,9 @@ hooks:
     - exec: wp --path=web plugin activate user-disable
 
     # Create Test Users
-    - exec: wp --path=web user create enabledAuthor enabled@example.com --role=author --user_pass=password
-    
+    - exec: wp --path=web user create author1 author1@example.com --role=author --user_pass=password
+    - exec: wp --path=web user create admin2 admin2@example.com --role=administrator --user_pass=password
+
 
 use_dns_when_possible: true
 composer_version: "2"
