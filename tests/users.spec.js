@@ -1,7 +1,16 @@
-const { test, expect } = require('@playwright/test');
+const { UserAuth } = require('./models/userAuth.js');
+const { test, expect } = require('./fixture.js');
 
-test('basic test', async({ page }) => {
-  await page.goto('https://user-disable-test.ddev.site:8443');
-  const title = page.locator('h1.wp-block-site-title');
-  await expect(title).toHaveText('Test');
+// Test that a disabled user cannot login
+
+
+// Test that a disabled user loses their current session
+
+// Test that a disabled user who is enabled can login
+
+// Test that admins cannot be disabled
+
+test('basic test', async({ userAuth, page }) => {
+  await userAuth.login('admin');
+  await userAuth.logout();
 });
