@@ -20,7 +20,7 @@ use WP_CLI;
 // Add disabled field to user edit form
 function usermeta_form_field_disabled(WP_User $user)
 {
-	if (current_user_can('disable_users', $user->ID)): ?>
+	if (!in_array('administrator', $user->roles) && current_user_can('disable_users')): ?>
 	<h3>Disable User Login</h3>
 	<table class="form-table">
 		<tr>
