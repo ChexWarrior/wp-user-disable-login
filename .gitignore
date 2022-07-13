@@ -18,3 +18,4 @@ web/wp-content/*
 web/wp-content/plugins/*
 !web/wp-content/plugins/user-disable
 
+node_modules/
