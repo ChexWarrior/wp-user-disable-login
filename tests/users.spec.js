@@ -39,16 +39,13 @@ test('A disabled user cannot login', async({ userProfile }) => {
   await userProfile.enableUser(authorUserId);
 });
 
-test('Disabled users lose active login sessions', async ({ userProfile, browser }) => {
+test('Disabled users lose active login sessions', async ({ userProfile, otherUserProfile }) => {
   // Login as user who will be disabled
   await userProfile.login(authorUsername);
 
   // Login as admin via a new session and disable user
-  const newContext = await browser.newContext();
-  const newPage = await newContext.newPage();
-  const adminUserProfile = new UserProfile(newPage);
-  await adminUserProfile.login(adminUsername);
-  await adminUserProfile.disableUser(authorUserId);
+  await otherUserProfile.login(adminUsername);
+  await otherUserProfile.disableUser(authorUserId);
 
   // Verify that disabled user is now logged out
   await userProfile.gotoUserProfile(authorUserId);
@@ -57,7 +54,7 @@ test('Disabled users lose active login sessions', async ({ userProfile, browser 
   expect(authorUrl.includes('wp-login.php')).toBeTruthy();
 
   // Clean up
-  await adminUserProfile.enableUser(authorUserId);
+  await otherUserProfile.enableUser(authorUserId);
 });
 
 // Test that a disabled user who is enabled can login

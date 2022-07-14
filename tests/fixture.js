@@ -6,6 +6,12 @@ exports.test = base.extend({
     const userProfile = new UserProfile(page);
     await use(userProfile);
   },
+  otherUserProfile: async({ browser }, use) => {
+    const ctx = await browser.newContext();
+    const newPage = await ctx.newPage();
+    const otherUserProfile = new UserProfile(newPage);
+    await use(otherUserProfile);
+  }
 });
 
 exports.expect = expect;
