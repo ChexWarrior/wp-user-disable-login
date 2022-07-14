@@ -1,4 +1,3 @@
-const { expect } = require('@playwright/test');
 const { UserAuth } = require('./userAuth');
 
 /**
