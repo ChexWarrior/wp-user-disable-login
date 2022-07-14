@@ -1,4 +1,5 @@
 const { test: base, expect } = require('@playwright/test');
+const { UserList } = require('./models/userList.js');
 const { UserProfile } = require('./models/userProfile.js');
 
 exports.test = base.extend({
@@ -12,7 +13,11 @@ exports.test = base.extend({
     const newPage = await ctx.newPage();
     const otherUserProfile = new UserProfile(newPage);
     await use(otherUserProfile);
-  }
+  },
+  userList: async({ page }, use) => {
+    const userList = new UserList(page);
+    await use(userList);
+  },
 });
 
 exports.expect = expect;
