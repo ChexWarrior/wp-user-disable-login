@@ -23,7 +23,7 @@ hooks:
     # Create Test Users
     - exec: wp --path=web user create author1 author1@example.com --role=author --user_pass=password
     - exec: wp --path=web user create admin2 admin2@example.com --role=administrator --user_pass=password
-    - exec: wp --path=web user create author2 author1@example.com --role=author --user_pass=password
+    - exec: wp --path=web user create author2 author2@example.com --role=author --user_pass=password
 
 
 use_dns_when_possible: true
