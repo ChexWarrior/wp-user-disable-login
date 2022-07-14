@@ -6,7 +6,8 @@ const config = {
     baseURL: process.env.BASE_URL,
     testMatch: 'tests/*.spec.js',
     maxFailures: 1,
-  }
+  },
+  workers: 1,
 };
 
 module.exports = config;
