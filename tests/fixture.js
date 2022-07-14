@@ -6,6 +6,7 @@ exports.test = base.extend({
     const userProfile = new UserProfile(page);
     await use(userProfile);
   },
+  // User Profile using a new session from userProfile
   otherUserProfile: async({ browser }, use) => {
     const ctx = await browser.newContext();
     const newPage = await ctx.newPage();
