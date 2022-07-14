@@ -11,6 +11,8 @@ const author1Info = { username: 'author1', id: 2 };
 const admin2Info = { username: 'admin2', id: 3 };
 const author2Info = { username: 'author2', id: 4 };
 
+const appPassword = process.env.APP_PASSWORD;
+
 test('Admins can disable and enable another user', async ({ userProfile }) => {
   await userProfile.login(admin1Info.username);
   await userProfile.disableUser(author1Info.id);
@@ -46,6 +48,26 @@ test('A disabled user cannot login', async({ userProfile }) => {
   const errorMsg = await messageDiv.innerText();
 
   await expect(errorMsg.includes('User is disabled')).toBeTruthy();
+
+  // Clean up
+  await userProfile.login(admin1Info.username);
+  await userProfile.enableUser(author1Info.id);
+});
+
+test("A disabled user's app passwords cannot be used with the WP API", async ({ userProfile, request }) => {
+  await userProfile.login(admin1Info.username);
+  await userProfile.disableUser(author1Info.id);
+  const auth = `${author1Info.username}:${appPassword}`;
+
+  const response = await request.get('/wp-json/wp/v2/users', {
+    'headers': {
+      'Authorization': `Basic ${btoa(auth)}`
+    }
+  });
+
+  const body = await response.json();
+  expect(body).toHaveProperty('code');
+  expect(body.code).toStrictEqual('user_disabled');
 
   // Clean up
   await userProfile.login(admin1Info.username);
