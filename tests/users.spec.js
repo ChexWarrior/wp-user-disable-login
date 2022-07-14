@@ -25,7 +25,7 @@ test('Admins cannot be disabled', async({ userProfile }) => {
   await expect(exists).toBeFalsy();
 });
 
-test.only('A disabled user cannot login', async({ userProfile }) => {
+test('A disabled user cannot login', async({ userProfile }) => {
   await userProfile.login(admin1Info.username);
   await userProfile.disableUser(author1Info.id);
   await userProfile.logout();
