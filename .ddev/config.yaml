@@ -17,12 +17,13 @@ hooks:
   post-start:
     # Setup Test Site
     - exec: composer install
-    - exec: wp --path=web core install --url=user-disable-test.ddev.site:8443 --title=Test --admin_user=admin --admin_password=password --admin_email=admin@example.com --skip-email
+    - exec: wp --path=web core install --url=user-disable-test.ddev.site:8443 --title=Test --admin_user=admin1 --admin_password=password --admin_email=admin1@example.com --skip-email
     - exec: wp --path=web plugin activate user-disable
 
     # Create Test Users
     - exec: wp --path=web user create author1 author1@example.com --role=author --user_pass=password
     - exec: wp --path=web user create admin2 admin2@example.com --role=administrator --user_pass=password
+    - exec: wp --path=web user create author2 author1@example.com --role=author --user_pass=password
 
 
 use_dns_when_possible: true
