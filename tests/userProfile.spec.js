@@ -29,7 +29,7 @@ test('Admins cannot be disabled', async({ userProfile }) => {
   await expect(exists).toBeFalsy();
 });
 
-test('Non-admins cannot disable users', async({ userProfile }) => {
+test('Non-admins cannot disable users', async ({ userProfile }) => {
   await userProfile.login(author1Info.username);
   await userProfile.gotoUserProfile(author2Info.id);
 
