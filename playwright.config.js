@@ -5,6 +5,7 @@ const config = {
     screenshot: 'only-on-failure',
     baseURL: 'https://user-disable-test.ddev.site:8443',
     testMatch: 'tests/*.spec.js',
+    maxFailures: 1,
   }
 };
 
