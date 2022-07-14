@@ -7,11 +7,9 @@ const { test, expect } = require('./fixture.js');
 
 // Test user information
 const admin1Info = { username: 'admin1', id: 1 };
-const author1Info = { username: 'author1', id: 2 };
+const author1Info = { username: 'author1', id: 2, appPassword: process.env.APP_PASSWORD };
 const admin2Info = { username: 'admin2', id: 3 };
 const author2Info = { username: 'author2', id: 4 };
-
-const appPassword = process.env.APP_PASSWORD;
 
 test('Admins can disable and enable another user', async ({ userProfile }) => {
   await userProfile.login(admin1Info.username);
@@ -57,11 +55,11 @@ test('A disabled user cannot login', async({ userProfile }) => {
 test("A disabled user's app passwords cannot be used with the WP API", async ({ userProfile, request }) => {
   await userProfile.login(admin1Info.username);
   await userProfile.disableUser(author1Info.id);
-  const auth = `${author1Info.username}:${appPassword}`;
+  const auth = btoa(`${author1Info.username}:${author1Info.appPassword}`);
 
   const response = await request.get('/wp-json/wp/v2/users', {
     'headers': {
-      'Authorization': `Basic ${btoa(auth)}`
+      'Authorization': `Basic ${auth}`
     }
   });
 
