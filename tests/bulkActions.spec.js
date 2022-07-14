@@ -11,7 +11,7 @@ const author1Info = { username: 'author1', id: 2 };
 const admin2Info = { username: 'admin2', id: 3 };
 const author2Info = { username: 'author2', id: 4 };
 
-test.only('Users can be enabled and disabled via Bulk Actions', async ({ userList }) => {
+test('Users can be enabled and disabled via Bulk Actions', async ({ userList }) => {
   await userList.login(admin1Info.username);
   await userList.disableUsers([author1Info.id, author2Info.id]);
   await userList.logout();
@@ -41,4 +41,17 @@ test.only('Users can be enabled and disabled via Bulk Actions', async ({ userLis
   await userList.logout();
 });
 
-//test('Admins can not be disabled', ({ userList, userPfo}))
+test('Admins can not be disabled', async ({ userList }) => {
+  await userList.login(admin1Info.username);
+  await userList.disableUsers([admin1Info.id, admin2Info.id]);
+
+  // Verify that current admin wasn't logged out/disabled
+  await userList.page.reload();
+  await expect(userList.page.url().includes('users.php')).toBeTruthy();
+  await userList.logout();
+
+  // Verify other admin can log in
+  await userList.login(admin2Info.username);
+  await expect(userList.page.url().includes('wp-admin')).toBeTruthy();
+  await userList.logout();
+});
