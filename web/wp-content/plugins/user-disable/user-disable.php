@@ -99,6 +99,20 @@ function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_Us
 
 add_filter('wp_authenticate_user', 'User_Disable\check_if_user_disabled', 10, 2);
 
+// Prevent disabled user's application passwords from being used with API
+function check_if_user_disabled_for_api(WP_Error $error, WP_User $user, array $item, string $password)
+{
+	$disabled_user_error = check_if_user_disabled($user, $password);
+
+	if ($disabled_user_error instanceof WP_Error) {
+		$error->add(
+			$disabled_user_error->get_error_code(), $disabled_user_error->get_error_message()
+		);
+	}
+}
+
+add_action('wp_authenticate_application_password_errors', 'User_Disable\check_if_user_disabled_for_api', 10, 4);
+
 // Show User Disabled Column
 function add_user_disabled_column(array $columns): array
 {
