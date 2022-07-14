@@ -1,4 +1,8 @@
-const { UserProfile } = require('./models/userProfile.js');
+/**
+ * These tests check that enable/disable user functionality
+ * works as expected when disabling/enabling a user from their
+ * profile page
+ */
 const { test, expect } = require('./fixture.js');
 
 // Test user information
@@ -22,6 +26,14 @@ test('Admins cannot be disabled', async({ userProfile }) => {
   await userProfile.gotoUserProfile(admin1Info.id);
   const exists = await userProfile.disabledCheckbox.count() > 0;
 
+  await expect(exists).toBeFalsy();
+});
+
+test.only('Non-admins cannot disable users', async({ userProfile }) => {
+  await userProfile.login(author1Info.username);
+  await userProfile.gotoUserProfile(author2Info.id);
+
+  const exists = await userProfile.disabledCheckbox.count() > 0;
   await expect(exists).toBeFalsy();
 });
 
