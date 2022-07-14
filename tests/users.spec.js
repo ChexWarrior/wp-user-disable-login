@@ -1,4 +1,4 @@
-const { UserAuth } = require('./models/userAuth.js');
+const { UserProfile } = require('./models/userProfile.js');
 const { test, expect } = require('./fixture.js');
 
 const adminUsername = 'admin';
@@ -39,6 +39,25 @@ test('A disabled user cannot login', async({ userProfile }) => {
   await userProfile.enableUser(authorUserId);
 });
 
-// Test that a disabled user loses their current session
+test('Disabled users lose active login sessions', async ({ userProfile, browser }) => {
+  // Login as user who will be disabled
+  await userProfile.login(authorUsername);
+
+  // Login as admin via a new session and disable user
+  const newContext = await browser.newContext();
+  const newPage = await newContext.newPage();
+  const adminUserProfile = new UserProfile(newPage);
+  await adminUserProfile.login(adminUsername);
+  await adminUserProfile.disableUser(authorUserId);
+
+  // Verify that disabled user is now logged out
+  await userProfile.gotoUserProfile(authorUserId);
+  const authorUrl = userProfile.page.url();
+
+  expect(authorUrl.includes('wp-login.php')).toBeTruthy();
+
+  // Clean up
+  await adminUserProfile.enableUser(authorUserId);
+});
 
 // Test that a disabled user who is enabled can login
