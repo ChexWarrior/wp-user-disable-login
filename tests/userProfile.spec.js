@@ -55,11 +55,12 @@ test('A disabled user cannot login', async({ userProfile }) => {
 test("A disabled user's app passwords cannot be used with the WP API", async ({ userProfile, request }) => {
   await userProfile.login(admin1Info.username);
   await userProfile.disableUser(author1Info.id);
-  const auth = btoa(`${author1Info.username}:${author1Info.appPassword}`);
+  let auth = Buffer.from(`${author1Info.username}:${author1Info.appPassword}`);
+
 
   const response = await request.get('/wp-json/wp/v2/users', {
     'headers': {
-      'Authorization': `Basic ${auth}`
+      'Authorization': `Basic ${auth.toString('base64')}`
     }
   });
 
