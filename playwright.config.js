@@ -3,7 +3,7 @@ const config = {
     viewport: { width: 1280, height: 720 },
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
-    baseURL: 'https://user-disable-test.ddev.site:8443',
+    baseURL: process.env.BASE_URL,
     testMatch: 'tests/*.spec.js',
     maxFailures: 1,
   }
