@@ -3,7 +3,8 @@ vendor/
 /screenshots/
 /packages/
 node_modules/
-
+/test-results/
+.test_app_password
 
 # To ensure that custom plugins and themes are included in repo but
 # not other WordPress files we have to ensure the entire path to the
@@ -20,4 +21,3 @@ web/wp-content/*
 web/wp-content/plugins/*
 !web/wp-content/plugins/user-disable
 
-/test-results/

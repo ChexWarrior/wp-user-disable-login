@@ -9,7 +9,7 @@ fi
 
 docker run -it --rm --net=host \
 	-e BASE_URL="$SITE_URL" \
-	-e APP_PASSWORD="E933qT3tzhxdrSXLwsfncvYE" \
+	-e APP_PASSWORD=$(cat .test_app_password) \
 	-v $PWD:/usr/src/app \
 	-w /usr/src/app \
 	mcr.microsoft.com/playwright:v1.23.1-focal \
