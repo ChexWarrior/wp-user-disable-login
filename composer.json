@@ -43,10 +43,10 @@
   },
   "scripts": {
     "post-install-cmd": [
-      "./sync-packages.sh"
+      "./scripts/sync-packages.sh"
     ],
     "post-update-cmd": [
-      "./sync-packages.sh"
+      "./scripts/sync-packages.sh"
     ]
   },
   "extra": {
