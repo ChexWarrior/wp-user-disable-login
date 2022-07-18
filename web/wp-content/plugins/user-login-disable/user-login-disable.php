@@ -55,7 +55,7 @@ class User_Login_Disable
 		}
 	}
 
-	public static function get_instance()
+	public static function get_instance(): User_Login_Disable
 	{
 		if (!self::$instance) {
 			self::$instance = new self;
@@ -64,7 +64,7 @@ class User_Login_Disable
 		return self::$instance;
 	}
 
-	public function usermeta_form_field_disabled(WP_User $user)
+	public function usermeta_form_field_disabled(WP_User $user): void
 	{
 		if (!in_array('administrator', $user->roles) && current_user_can('disable_users')) : ?>
 			<h3>Disable User Login</h3>
@@ -88,7 +88,7 @@ class User_Login_Disable
 	}
 
 	// Update actual user disabled metadata
-	public function update_disable_metadata($is_disabled, $user_id)
+	public function update_disable_metadata(bool $is_disabled, int|string $user_id):int|bool
 	{
 		// Administrators cannot be disabled
 		$user = get_userdata($user_id);
@@ -133,7 +133,7 @@ class User_Login_Disable
 		return $user;
 	}
 
-	public function check_if_user_disabled_for_api(WP_Error $error, WP_User $user, array $item, string $password)
+	public function check_if_user_disabled_for_api(WP_Error $error, WP_User $user, array $item, string $password): void
 	{
 		$disabled_user_error = $this->check_if_user_disabled($user, $password);
 
@@ -158,7 +158,7 @@ class User_Login_Disable
 		);
 	}
 
-	public function show_user_disabled_column($value, $column_name, $user_id)
+	public function show_user_disabled_column(string $value, string $column_name, int $user_id): string
 	{
 		if ($column_name === 'user_disabled') {
 			$user_data = get_userdata($user_id);
@@ -169,7 +169,7 @@ class User_Login_Disable
 		return $value;
 	}
 
-	public function enable_disable_users($action, $user_ids): int
+	public function enable_disable_users(string $action, array $user_ids): int
 	{
 		$count = 0;
 		foreach ($user_ids as $id) {
@@ -184,7 +184,7 @@ class User_Login_Disable
 	}
 
 
-	public function register_enable_disable_bulk_actions($bulk_actions)
+	public function register_enable_disable_bulk_actions(array $bulk_actions): array
 	{
 		$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
 		$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
@@ -192,7 +192,7 @@ class User_Login_Disable
 		return $bulk_actions;
 	}
 
-	public function handle_enable_disable_bulk_actions($redirect_url, $action_name, $user_ids)
+	public function handle_enable_disable_bulk_actions(string $redirect_url, string $action_name, array $user_ids): string
 	{
 		if ($action_name === 'disable_user' || $action_name === 'enable_user') {
 			$count = $this->enable_disable_users($action_name, $user_ids);
@@ -203,15 +203,15 @@ class User_Login_Disable
 		return $redirect_url;
 	}
 
-	public function enable_disable_bulk_notification()
+	public function enable_disable_bulk_notification(): void
 	{
 		if (!empty($_REQUEST['disable_user'])) {
 			$count = intval($_REQUEST['disable_user']);
 			echo <<<HTML
-		<div class="notice notice-info is-dismissible">
-			<p>Disabled $count user(s).</p>
-		</div>
-		HTML;
+			<div class="notice notice-info is-dismissible">
+				<p>Disabled $count user(s).</p>
+			</div>
+			HTML;
 		}
 
 		if (!empty($_REQUEST['enable_user'])) {
@@ -225,7 +225,7 @@ class User_Login_Disable
 	}
 
 	// Add WP-CLI Commands for enabling/disabling users
-	public function cli_disable_users($user_ids)
+	public function cli_disable_users(array $user_ids): void
 	{
 		$this->cli_verify_user_ids($user_ids);
 		$count = $this->enable_disable_users('disable_user', $user_ids);
@@ -233,7 +233,7 @@ class User_Login_Disable
 		WP_CLI::success("Disabled $count user(s)");
 	}
 
-	public function cli_enable_users($user_ids)
+	public function cli_enable_users(array $user_ids): void
 	{
 		$this->cli_verify_user_ids($user_ids);
 		$count = $this->enable_disable_users('enable_user', $user_ids);
@@ -241,7 +241,7 @@ class User_Login_Disable
 		WP_CLI::success("Enabled $count user(s)");
 	}
 
-	public function cli_verify_user_ids($args)
+	public function cli_verify_user_ids(array $args): void
 	{
 		if (!is_array($args) || empty($args)) {
 			WP_CLI::error("Must pass array of user ids!");
@@ -254,7 +254,7 @@ class User_Login_Disable
 		}
 	}
 
-	public static function uninstall_plugin()
+	public static function uninstall_plugin(): void
 	{
 		// Remove disabled user metadata from all users
 		delete_metadata('user', -1, 'disabled', null, true);
@@ -264,7 +264,7 @@ class User_Login_Disable
 		$role->remove_cap('disable_users');
 	}
 
-	public static function activate_plugin()
+	public static function activate_plugin(): void
 	{
 		// Give capability for disabling users to admins only
 		$role = get_role('administrator');
