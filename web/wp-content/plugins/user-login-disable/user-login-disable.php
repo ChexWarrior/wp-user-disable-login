@@ -47,12 +47,6 @@ class User_Login_Disable
 
 		register_activation_hook(__FILE__, 'User_Login_Disable::activate_plugin');
 		register_uninstall_hook(__FILE__, 'User_Login_Disable::uninstall_plugin');
-
-		// Setup commands for WP-CLI
-		if (defined('WP_CLI') && !empty(WP_CLI)) {
-			WP_CLI::add_command('user enable', [$this, 'cli_enable_users']);
-			WP_CLI::add_command('user disable', [$this, 'cli_disable_users']);
-		}
 	}
 
 	public static function get_instance(): User_Login_Disable
@@ -224,36 +218,6 @@ class User_Login_Disable
 		}
 	}
 
-	// Add WP-CLI Commands for enabling/disabling users
-	public function cli_disable_users(array $user_ids): void
-	{
-		$this->cli_verify_user_ids($user_ids);
-		$count = $this->enable_disable_users('disable_user', $user_ids);
-
-		WP_CLI::success("Disabled $count user(s)");
-	}
-
-	public function cli_enable_users(array $user_ids): void
-	{
-		$this->cli_verify_user_ids($user_ids);
-		$count = $this->enable_disable_users('enable_user', $user_ids);
-
-		WP_CLI::success("Enabled $count user(s)");
-	}
-
-	public function cli_verify_user_ids(array $args): void
-	{
-		if (!is_array($args) || empty($args)) {
-			WP_CLI::error("Must pass array of user ids!");
-		}
-
-		foreach ($args as $arg) {
-			if (intval($arg) === 0 || $arg < 1) {
-				WP_CLI::error('User ids must be positive integers!');
-			}
-		}
-	}
-
 	public static function uninstall_plugin(): void
 	{
 		// Remove disabled user metadata from all users
@@ -274,3 +238,7 @@ class User_Login_Disable
 
 // Instantiate the class
 $user_login_disable = User_Login_Disable::get_instance();
+
+if (defined('WP_CLI') && !empty(WP_CLI)) {
+	require(dirname(__FILE__) . '/include/user-login-disable-cli-command.php');
+}
