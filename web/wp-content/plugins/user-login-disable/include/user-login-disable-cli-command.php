@@ -22,7 +22,19 @@ class User_Login_Disable_CLI_Command
 		}
 	}
 
-	public function enable_users(array $user_ids): void
+	/**
+	 * Enables users
+	 *
+	 * ## OPTIONS
+	 *
+	 * <user_ids>
+	 * : A list of user ids for the users to be enabled
+	 *
+	 * [--all]
+	 * : If this flag is included then all users in site will be enabled
+	 *
+	 */
+	public function enable_users(array $user_ids, array $assoc_args): void
 	{
 		$this->verify_user_ids($user_ids);
 		$count = $this->userLoginDisable->enable_disable_users('enable_user', $user_ids);
@@ -30,7 +42,20 @@ class User_Login_Disable_CLI_Command
 		WP_CLI::success("Enabled $count user(s)");
 	}
 
-	public function disable_users(array $user_ids): void
+	/**
+	 * Disable users
+	 *
+	 * ## OPTIONS
+	 *
+	 * <user_ids>
+	 * : A list of user ids for the users to be disabled
+	 *
+	 * [--all]
+	 * : If this flag is included then all non-admin users in site will be disabled
+	 *
+	 */
+
+	public function disable_users(array $user_ids, array $assoc_args): void
 	{
 		$this->verify_user_ids($user_ids);
 		$count = $this->userLoginDisable->enable_disable_users('disable_user', $user_ids);
