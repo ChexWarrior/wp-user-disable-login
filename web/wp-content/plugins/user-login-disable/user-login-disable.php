@@ -40,6 +40,11 @@ class User_Login_Disable
 
 		// Checks if a user is disabled when using an app password with API
 		add_action('wp_authenticate_application_password_errors', [$this, 'check_if_user_disabled_for_api'], 10, 4);
+
+		// Add User Disabled column to admin user's list
+		add_filter('manage_users_columns', [$this, 'add_user_disabled_column']);
+		add_filter('manage_users_custom_column', [$this, 'show_user_disabled_column'], 10, 3);
+
 	}
 
 	public static function get_instance()
@@ -132,37 +137,32 @@ class User_Login_Disable
 		}
 	}
 
-}
-
-
-// Show User Disabled Column
-function add_user_disabled_column(array $columns): array
-{
-	$check_column = $columns['cb'];
-	unset($columns['cb']);
-	return array_merge(
-		[
-			'cb' => $check_column,
-			'user_disabled' => 'User Disabled'
-		],
-		$columns
-	);
-}
-
-function show_user_disabled_column($value, $column_name, $user_id)
-{
-	if ($column_name === 'user_disabled') {
-		$user_data = get_userdata($user_id);
-		return $user_data->get('disabled') === "1"
-			? '<strong class="file-error">Disabled</strong>' : '';
+	public function add_user_disabled_column(array $columns): array
+	{
+		$check_column = $columns['cb'];
+		unset($columns['cb']);
+		return array_merge(
+			[
+				'cb' => $check_column,
+				'user_disabled' => 'User Disabled'
+			],
+			$columns
+		);
 	}
 
-	return $value;
+	public function show_user_disabled_column($value, $column_name, $user_id)
+	{
+		if ($column_name === 'user_disabled') {
+			$user_data = get_userdata($user_id);
+			return $user_data->get('disabled') === "1"
+			? '<strong class="file-error">Disabled</strong>' : '';
+		}
+
+		return $value;
+	}
+
 }
 
-add_filter('manage_users_columns', 'User_Disable\add_user_disabled_column');
-
-add_filter('manage_users_custom_column', 'User_Disable\show_user_disabled_column', 10, 3);
 
 // Add User Disable/Enable Bulk Actions
 function enable_disable_users($action, $user_ids): int
