@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Plugin Name:     User Disable
+ * Plugin Name:     User Login Disable
  * Description:     Allows admins to enable and disable users login
  * Author:          Chexwarrior
  * Version:         0.1.0
