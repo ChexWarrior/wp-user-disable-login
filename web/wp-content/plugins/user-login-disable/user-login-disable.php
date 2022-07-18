@@ -7,7 +7,7 @@
  * Version:         0.1.0
  * Requires PHP: 	8.0
  *
- * @package         User_Disable
+ * @package         User_Login_Disable
  */
 
 namespace User_Disable;
@@ -16,6 +16,26 @@ use WP_Error;
 use WP_Session_Tokens;
 use WP_User;
 use WP_CLI;
+
+class User_Login_Disable
+{
+	/**
+	 * This class is a singleton
+	 */
+	static ?User_Login_Disable $instance = null;
+
+	function __construct() {
+		// Initialize hooks
+	}
+
+	public static function get_instance() {
+		if (!self::$instance) {
+			self::$instance = new self;
+		}
+
+		return self::$instance;
+	}
+}
 
 // Add disabled field to user edit form
 function usermeta_form_field_disabled(WP_User $user)
