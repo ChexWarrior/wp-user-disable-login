@@ -19,7 +19,7 @@ class User_Login_Disable
 	 */
 	static ?User_Login_Disable $instance = null;
 
-	function __construct()
+	private function __construct()
 	{
 		// Setup hooks
 		// Handles showing or hiding the field for enabling/disabling user login
