@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /**
  * Plugin Name:     User Login Disable
@@ -24,125 +26,127 @@ class User_Login_Disable
 	 */
 	static ?User_Login_Disable $instance = null;
 
-	function __construct() {
-		// Initialize hooks
+	function __construct()
+	{
+		// Setup hooks
+		// Handles showing or hiding the field for enabling/disabling user login
+		add_action('show_user_profile', [$this, 'usermeta_form_field_disabled']);
+		add_action('edit_user_profile', [$this, 'usermeta_form_field_disabled']);
+		add_action('personal_options_update', [$this, 'usermeta_form_field_disabled_update']);
+		add_action('edit_user_profile_update', [$this, 'usermeta_form_field_disabled_update']);
+
+		// Handles checking if a user is disabled when they're authenicated with WP
+		add_filter('wp_authenticate_user', [$this, 'check_if_user_disabled'], 10, 2);
+
+		// Checks if a user is disabled when using an app password with API
+		add_action('wp_authenticate_application_password_errors', [$this, 'check_if_user_disabled_for_api'], 10, 4);
 	}
 
-	public static function get_instance() {
+	public static function get_instance()
+	{
 		if (!self::$instance) {
 			self::$instance = new self;
 		}
 
 		return self::$instance;
 	}
-}
 
-// Add disabled field to user edit form
-function usermeta_form_field_disabled(WP_User $user)
-{
-	if (!in_array('administrator', $user->roles) && current_user_can('disable_users')): ?>
-	<h3>Disable User Login</h3>
-	<table class="form-table">
-		<tr>
-			<th>
-				<label for="disabled">Is Disabled</label>
-			</th>
-			<td>
-				<input type="checkbox"
-					id="disabled"
-					name="disabled"
-					<?php
+	public function usermeta_form_field_disabled(WP_User $user)
+	{
+		if (!in_array('administrator', $user->roles) && current_user_can('disable_users')) : ?>
+			<h3>Disable User Login</h3>
+			<table class="form-table">
+				<tr>
+					<th>
+						<label for="disabled">Is Disabled</label>
+					</th>
+					<td>
+						<input type="checkbox" id="disabled" name="disabled" <?php
 						echo esc_attr(get_user_meta($user->ID, 'disabled', true))
-							? 'checked' : ''
-					?>
-					title="If checked user will not be able to login"
-					required>
-				<p class="description">
-					If checked user will not be able to login.
-				</p>
-			</td>
-		</tr>
-	</table>
-	<?php endif;
-}
-
-// Update actual user disabled metadata
-function update_disable_metadata($is_disabled, $user_id)
-{
-	// Administrators cannot be disabled
-	$user = get_userdata($user_id);
-	if (in_array('administrator', $user->roles)) {
-		return false;
+							? 'checked' : '' ?>
+							title="If checked user will not be able to login" required>
+						<p class="description">
+							If checked user will not be able to login.
+						</p>
+					</td>
+				</tr>
+			</table>
+		<?php endif;
 	}
 
-	// Logout target user when they are disabled
-	if ($is_disabled) {
-		$sessions = WP_Session_Tokens::get_instance($user_id);
-		$sessions->destroy_all();
-	}
+	// Update actual user disabled metadata
+	public function update_disable_metadata($is_disabled, $user_id)
+	{
+		// Administrators cannot be disabled
+		$user = get_userdata($user_id);
+		if (in_array('administrator', $user->roles)) {
+			return false;
+		}
 
-	return update_user_meta(
-		$user_id,
-		'disabled',
-		$is_disabled
-	);
-}
+		// Logout target user when they are disabled
+		if ($is_disabled) {
+			$sessions = WP_Session_Tokens::get_instance($user_id);
+			$sessions->destroy_all();
+		}
 
-// Ensure meta data is updated and disabled users are logged out
-function usermeta_form_field_disabled_update(int $user_id): int|bool
-{
-	if (!current_user_can('edit_user', $user_id)) {
-		return false;
-	}
-
-	$disabled = $_POST['disabled'] === 'on';
-
-	return update_disable_metadata($disabled, $user_id);
-}
-
-add_action('show_user_profile', 'User_Disable\usermeta_form_field_disabled');
-add_action('edit_user_profile', 'User_Disable\usermeta_form_field_disabled');
-add_action('personal_options_update', 'User_Disable\usermeta_form_field_disabled_update');
-add_action('edit_user_profile_update', 'User_Disable\usermeta_form_field_disabled_update');
-
-// Ensure we check disabled meta when a user logs in
-function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
-{
-	$disabled = get_user_meta($user->ID, 'disabled', true) === "1";
-
-	if ($disabled) {
-		return new WP_Error('user_disabled', 'User is disabled', $user->ID);
-	}
-
-	return $user;
-}
-
-add_filter('wp_authenticate_user', 'User_Disable\check_if_user_disabled', 10, 2);
-
-// Prevent disabled user's application passwords from being used with API
-function check_if_user_disabled_for_api(WP_Error $error, WP_User $user, array $item, string $password)
-{
-	$disabled_user_error = check_if_user_disabled($user, $password);
-
-	if ($disabled_user_error instanceof WP_Error) {
-		$error->add(
-			$disabled_user_error->get_error_code(), $disabled_user_error->get_error_message()
+		return update_user_meta(
+			$user_id,
+			'disabled',
+			$is_disabled
 		);
 	}
+
+	// Ensure meta data is updated and disabled users are logged out
+	public function usermeta_form_field_disabled_update(int $user_id): int|bool
+	{
+		if (!current_user_can('edit_user', $user_id)) {
+			return false;
+		}
+
+		$disabled = $_POST['disabled'] === 'on';
+
+		return $this->update_disable_metadata($disabled, $user_id);
+	}
+
+	// Ensure we check disabled meta when a user logs in
+	public function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
+	{
+		$disabled = get_user_meta($user->ID, 'disabled', true) === "1";
+
+		if ($disabled) {
+			return new WP_Error('user_disabled', 'User is disabled', $user->ID);
+		}
+
+		return $user;
+	}
+
+	public function check_if_user_disabled_for_api(WP_Error $error, WP_User $user, array $item, string $password)
+	{
+		$disabled_user_error = $this->check_if_user_disabled($user, $password);
+
+		if ($disabled_user_error instanceof WP_Error) {
+			$error->add(
+				$disabled_user_error->get_error_code(),
+				$disabled_user_error->get_error_message()
+			);
+		}
+	}
+
 }
 
-add_action('wp_authenticate_application_password_errors', 'User_Disable\check_if_user_disabled_for_api', 10, 4);
 
 // Show User Disabled Column
 function add_user_disabled_column(array $columns): array
 {
 	$check_column = $columns['cb'];
 	unset($columns['cb']);
-	return array_merge([
-		'cb' => $check_column,
-		'user_disabled' => 'User Disabled'
-	],
-	$columns);
+	return array_merge(
+		[
+			'cb' => $check_column,
+			'user_disabled' => 'User Disabled'
+		],
+		$columns
+	);
 }
 
 function show_user_disabled_column($value, $column_name, $user_id)
@@ -194,8 +198,9 @@ function handle_enable_disable_bulk_actions($redirect_url, $action_name, $user_i
 	return $redirect_url;
 }
 
-function enable_disable_bulk_notification() {
-	if (!empty( $_REQUEST['disable_user'])) {
+function enable_disable_bulk_notification()
+{
+	if (!empty($_REQUEST['disable_user'])) {
 		$count = intval($_REQUEST['disable_user']);
 		echo <<<HTML
 		<div class="notice notice-info is-dismissible">
