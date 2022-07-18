@@ -45,6 +45,21 @@ class User_Login_Disable
 		add_filter('manage_users_columns', [$this, 'add_user_disabled_column']);
 		add_filter('manage_users_custom_column', [$this, 'show_user_disabled_column'], 10, 3);
 
+		// Update Admin Notices for plugin functionality
+		add_action('admin_notices', [$this, 'enable_disable_bulk_notification']);
+
+		// Handle Bulk Actions for enabling/disabling users
+		add_filter('bulk_actions-users', [$this, 'register_enable_disable_bulk_actions']);
+		add_filter('handle_bulk_actions-users', [$this, 'handle_enable_disable_bulk_actions'], 10, 3);
+
+		register_activation_hook(__FILE__, [$this, 'activate_plugin']);
+		register_uninstall_hook(__FILE__, [$this, 'uninstall_plugin']);
+
+		// Setup commands for WP-CLI
+		if (defined('WP_CLI') && !empty(WP_CLI)) {
+			WP_CLI::add_command('user enable', [$this, 'cli_enable_users']);
+			WP_CLI::add_command('user disable', [$this, 'cli_disable_users']);
+		}
 	}
 
 	public static function get_instance()
@@ -161,123 +176,108 @@ class User_Login_Disable
 		return $value;
 	}
 
-}
+	public function enable_disable_users($action, $user_ids): int
+	{
+		$count = 0;
+		foreach ($user_ids as $id) {
+			$this->update_disable_metadata(
+				$action === 'disable_user',
+				$id
+			);
+			$count += 1;
+		}
 
-
-// Add User Disable/Enable Bulk Actions
-function enable_disable_users($action, $user_ids): int
-{
-	$count = 0;
-	foreach ($user_ids as $id) {
-		update_disable_metadata(
-			$action === 'disable_user',
-			$id
-		);
-		$count += 1;
+		return $count;
 	}
 
-	return $count;
-}
 
-function register_enable_disable_bulk_actions($bulk_actions)
-{
-	$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
-	$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
+	public function register_enable_disable_bulk_actions($bulk_actions)
+	{
+		$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
+		$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
 
-	return $bulk_actions;
-}
-
-function handle_enable_disable_bulk_actions($redirect_url, $action_name, $user_ids)
-{
-	if ($action_name === 'disable_user' || $action_name === 'enable_user') {
-		$count = enable_disable_users($action_name, $user_ids);
-
-		return add_query_arg($action_name, $count, $redirect_url);
+		return $bulk_actions;
 	}
 
-	return $redirect_url;
-}
+	public function handle_enable_disable_bulk_actions($redirect_url, $action_name, $user_ids)
+	{
+		if ($action_name === 'disable_user' || $action_name === 'enable_user') {
+			$count = $this->enable_disable_users($action_name, $user_ids);
 
-function enable_disable_bulk_notification()
-{
-	if (!empty($_REQUEST['disable_user'])) {
-		$count = intval($_REQUEST['disable_user']);
-		echo <<<HTML
+			return add_query_arg($action_name, $count, $redirect_url);
+		}
+
+		return $redirect_url;
+	}
+
+	public function enable_disable_bulk_notification()
+	{
+		if (!empty($_REQUEST['disable_user'])) {
+			$count = intval($_REQUEST['disable_user']);
+			echo <<<HTML
 		<div class="notice notice-info is-dismissible">
 			<p>Disabled $count user(s).</p>
 		</div>
 		HTML;
-	}
+		}
 
-	if (!empty($_REQUEST['enable_user'])) {
-		$count = intval($_REQUEST['enable_user']);
-		echo <<<HTML
-		<div class="notice notice-info is-dismissible">
-			<p>Enabled $count user(s).</p>
-		</div>
-		HTML;
-	}
-}
-
-add_action('admin_notices', 'User_Disable\enable_disable_bulk_notification');
-
-add_filter('bulk_actions-users', 'User_Disable\register_enable_disable_bulk_actions');
-
-add_filter('handle_bulk_actions-users', 'User_Disable\handle_enable_disable_bulk_actions', 10, 3);
-
-// Add WP-CLI Commands for enabling/disabling users
-function cli_disable_users($user_ids)
-{
-	cli_verify_user_ids($user_ids);
-	$count = enable_disable_users('disable_user', $user_ids);
-
-	WP_CLI::success("Disabled $count user(s)");
-}
-
-function cli_enable_users($user_ids)
-{
-	cli_verify_user_ids($user_ids);
-	$count = enable_disable_users('enable_user', $user_ids);
-
-	WP_CLI::success("Enabled $count user(s)");
-}
-
-function cli_verify_user_ids($args)
-{
-	if (!is_array($args) || empty($args)) {
-		WP_CLI::error("Must pass array of user ids!");
-	}
-
-	foreach ($args as $arg) {
-		if (intval($arg) === 0 || $arg < 1) {
-			WP_CLI::error('User ids must be positive integers!');
+		if (!empty($_REQUEST['enable_user'])) {
+			$count = intval($_REQUEST['enable_user']);
+			echo <<<HTML
+			<div class="notice notice-info is-dismissible">
+				<p>Enabled $count user(s).</p>
+			</div>
+			HTML;
 		}
 	}
+
+	// Add WP-CLI Commands for enabling/disabling users
+	public function cli_disable_users($user_ids)
+	{
+		$this->cli_verify_user_ids($user_ids);
+		$count = $this->enable_disable_users('disable_user', $user_ids);
+
+		WP_CLI::success("Disabled $count user(s)");
+	}
+
+	public function cli_enable_users($user_ids)
+	{
+		$this->cli_verify_user_ids($user_ids);
+		$count = $this->enable_disable_users('enable_user', $user_ids);
+
+		WP_CLI::success("Enabled $count user(s)");
+	}
+
+	public function cli_verify_user_ids($args)
+	{
+		if (!is_array($args) || empty($args)) {
+			WP_CLI::error("Must pass array of user ids!");
+		}
+
+		foreach ($args as $arg) {
+			if (intval($arg) === 0 || $arg < 1) {
+				WP_CLI::error('User ids must be positive integers!');
+			}
+		}
+	}
+
+	public function uninstall_plugin()
+	{
+		// Remove disabled user metadata from all users
+		delete_metadata('user', -1, 'disabled', null, true);
+
+		// Remove disable users capability
+		$role = get_role('administrator');
+		$role->remove_cap('disable_users');
+	}
+
+	public function activate_plugin()
+	{
+		// Give capability for disabling users to admins only
+		$role = get_role('administrator');
+		$role->add_cap('disable_users', true);
+	}
 }
 
-if (defined('WP_CLI') && !empty(WP_CLI)) {
-	WP_CLI::add_command('user enable', 'User_Disable\cli_enable_users');
-	WP_CLI::add_command('user disable', 'User_Disable\cli_disable_users');
-}
-
-// Handle Activate and Uninstall plugin actions
-function uninstall_plugin()
-{
-	// Remove disabled user metadata from all users
-	delete_metadata('user', -1, 'disabled', null, true);
-
-	// Remove disable users capability
-	$role = get_role('administrator');
-	$role->remove_cap('disable_users');
-}
-
-register_uninstall_hook(__FILE__, 'User_Disable\uninstall_plugin');
-
-function activate_plugin()
-{
-	// Give capability for disabling users to admins only
-	$role = get_role('administrator');
-	$role->add_cap('disable_users', true);
-}
-
-register_activation_hook(__FILE__, 'User_Disable\activate_plugin');
+// Instantiate the class
+$user_login_disable = User_Login_Disable::get_instance();
