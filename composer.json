@@ -38,6 +38,7 @@
     "wpackagist-plugin/user-role-editor": "^4.55.1"
   },
   "require-dev": {
+    "phpunit/phpunit": "^9.5",
     "wpackagist-plugin/debug-bar": "^1.0.1",
     "wpackagist-plugin/query-monitor": "^3.6.0"
   },
