@@ -12,13 +12,6 @@ declare(strict_types=1);
  * @package         User_Login_Disable
  */
 
-namespace User_Disable;
-
-use WP_Error;
-use WP_Session_Tokens;
-use WP_User;
-use WP_CLI;
-
 class User_Login_Disable
 {
 	/**
