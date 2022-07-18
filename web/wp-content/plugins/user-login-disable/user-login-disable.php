@@ -45,8 +45,8 @@ class User_Login_Disable
 		add_filter('bulk_actions-users', [$this, 'register_enable_disable_bulk_actions']);
 		add_filter('handle_bulk_actions-users', [$this, 'handle_enable_disable_bulk_actions'], 10, 3);
 
-		register_activation_hook(__FILE__, [$this, 'activate_plugin']);
-		register_uninstall_hook(__FILE__, [$this, 'uninstall_plugin']);
+		register_activation_hook(__FILE__, 'User_Login_Disable::activate_plugin');
+		register_uninstall_hook(__FILE__, 'User_Login_Disable::uninstall_plugin');
 
 		// Setup commands for WP-CLI
 		if (defined('WP_CLI') && !empty(WP_CLI)) {
@@ -254,7 +254,7 @@ class User_Login_Disable
 		}
 	}
 
-	public function uninstall_plugin()
+	public static function uninstall_plugin()
 	{
 		// Remove disabled user metadata from all users
 		delete_metadata('user', -1, 'disabled', null, true);
@@ -264,7 +264,7 @@ class User_Login_Disable
 		$role->remove_cap('disable_users');
 	}
 
-	public function activate_plugin()
+	public static function activate_plugin()
 	{
 		// Give capability for disabling users to admins only
 		$role = get_role('administrator');
