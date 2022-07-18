@@ -52,7 +52,7 @@ test('A disabled user cannot login', async({ userProfile }) => {
   await userProfile.enableUser(author1Info.id);
 });
 
-test.only("A disabled user's app passwords cannot be used with the WP API", async ({ userProfile, request }) => {
+test("A disabled user's app passwords cannot be used with the WP API", async ({ userProfile, request }) => {
   await userProfile.login(admin1Info.username);
   await userProfile.disableUser(author1Info.id);
   let auth = Buffer.from(`${author1Info.username}:${author1Info.appPassword}`);
