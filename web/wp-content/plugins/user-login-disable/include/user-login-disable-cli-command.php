@@ -36,21 +36,7 @@ class User_Login_Disable_CLI_Command
 	 */
 	public function enable_users(array $user_args = [], array $assoc_args = []): void
 	{
-		if (empty($user_args) && empty($assoc_args)) {
-			WP_CLI::error('Please specify one or more users, or use --all');
-		}
-
-		['all' => $allFlag] = $assoc_args;
-
-		$user_ids = $this->run_user_query(
-			$allFlag === true,
-			false,
-			$user_args,
-		);
-
-		$count = $this->userLoginDisable->enable_disable_users('enable_user', $user_ids);
-
-		WP_CLI::success("Enabled $count user(s)");
+		$this->run_command($user_args, $assoc_args, true);
 	}
 
 	/**
@@ -67,6 +53,11 @@ class User_Login_Disable_CLI_Command
 	 */
 	public function disable_users(array $user_args = [], array $assoc_args = []): void
 	{
+		$this->run_command($user_args, $assoc_args, false);
+	}
+
+	private function run_command(array $user_args, array $assoc_args, bool $enableUsers): void
+	{
 		if (empty($user_args) && empty($assoc_args)) {
 			WP_CLI::error('Please specify one or more users, or use --all');
 		}
@@ -74,11 +65,13 @@ class User_Login_Disable_CLI_Command
 		['all' => $allFlag] = $assoc_args;
 		$user_ids = $this->run_user_query(
 			$allFlag === true,
-			true,
+			!$enableUsers,
 			$user_args,
 		);
 
-		$count = $this->userLoginDisable->enable_disable_users('disable_user', $user_ids);
+		$command = $enableUsers ? 'enable_user' : 'disable_user';
+
+		$count = $this->userLoginDisable->enable_disable_users($command, $user_ids);
 
 		WP_CLI::success("Disabled $count user(s)");
 	}
