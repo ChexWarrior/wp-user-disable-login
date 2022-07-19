@@ -10,7 +10,7 @@
  * @package         User_Login_Disable
  */
 
-require dirname(__FILE__) . 'include/UserLoginDisablePlugin.php';
+require dirname(__FILE__) . '/include/UserLoginDisablePlugin.php';
 
  // Instantiate the class
 $user_login_disable = UserLoginDisablePlugin::get_instance();
