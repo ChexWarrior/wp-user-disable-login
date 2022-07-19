@@ -49,6 +49,32 @@ class User_Login_Disable_CLI_Command
 	}
 
 	/**
+	 * Disable users
+	 *
+	 * ## OPTIONS
+	 *
+	 * [<user_info>...]
+	 * : A list of user ids, logins or emails for the users to be enabled
+	 *
+	 * [--all]
+	 * : If this flag is included then all non-admin users in site will be disabled
+	 *
+	 */
+	public function disable_users(array $user_args = [], array $assoc_args = []): void
+	{
+		['all' => $allFlag] = $assoc_args;
+		$user_ids = $this->run_user_query(
+			$allFlag === true,
+			true,
+			$user_args,
+		);
+
+		$count = $this->userLoginDisable->enable_disable_users('disable_user', $user_ids);
+
+		WP_CLI::success("Disabled $count user(s)");
+	}
+
+	/**
 	 * Builds user query for disabling or enabling users via WP_CLI
 	 *
 	 * @param bool $getAll
@@ -143,32 +169,6 @@ class User_Login_Disable_CLI_Command
 			'user_ids' => $ids,
 			'user_name_emails' => $non_ids,
 		];
-	}
-
-	/**
-	 * Disable users
-	 *
-	 * ## OPTIONS
-	 *
-	 * [<user_info>...]
-	 * : A list of user ids, logins or emails for the users to be enabled
-	 *
-	 * [--all]
-	 * : If this flag is included then all non-admin users in site will be disabled
-	 *
-	 */
-	public function disable_users(array $user_args = [], array $assoc_args = []): void
-	{
-		['all' => $allFlag] = $assoc_args;
-		$user_ids = $this->run_user_query(
-			$allFlag === true,
-			true,
-			$user_args,
-		);
-
-		$count = $this->userLoginDisable->enable_disable_users('disable_user', $user_ids);
-
-		WP_CLI::success("Disabled $count user(s)");
 	}
 }
 
