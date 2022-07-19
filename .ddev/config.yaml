@@ -25,7 +25,7 @@ use_dns_when_possible: true
 composer_version: "2"
 web_environment:
 # Mac/Windows Xdebug Setup
-- XDEBUG_CONFIG=mode=debug log=/tmp/xdebug-test.log start_with_request=yes
+# - XDEBUG_CONFIG=mode=debug log=/tmp/xdebug-test.log start_with_request=yes
 # Linux Xdebug Setup
-#- XDEBUG_CONFIG=mode=debug client_host=172.17.0.1 log=/tmp/xdebug-test.log start_with_request=yes
+- XDEBUG_CONFIG=mode=debug client_host=172.17.0.1 log=/tmp/xdebug-test.log start_with_request=yes
 nodejs_version: "16"
