@@ -1,10 +1,10 @@
 <?php declare(strict_types=1);
 
-class User_Login_Disable_CLI_Command
+class UserLoginDisableCmds
 {
-	private User_Login_Disable $userLoginDisable;
+	private UserLoginDisablePlugin $userLoginDisable;
 
-	public function __construct(User_Login_Disable $userLoginDisable)
+	public function __construct(UserLoginDisablePlugin $userLoginDisable)
 	{
 		$this->userLoginDisable = $userLoginDisable;
 	}

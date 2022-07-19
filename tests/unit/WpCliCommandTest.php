@@ -3,17 +3,17 @@
 use PHPUnit\Framework\TestCase;
 
 // Include our WP classes :/
-require dirname(__FILE__) . '/../../web/wp-content/plugins/user-login-disable/include/user-login-disable-plugin-class.php';
-require dirname(__FILE__) . '/../../web/wp-content/plugins/user-login-disable/include/user-login-disable-cli-command.php';
+require dirname(__FILE__) . '/../../web/wp-content/plugins/user-login-disable/include/UserLoginDisablePlugin.php';
+require dirname(__FILE__) . '/../../web/wp-content/plugins/user-login-disable/include/UserLoginDisableCmds.php';
 
 class WpCliCommandTest extends TestCase
 {
-    private ?User_Login_Disable_CLI_Command $cliCmd = null;
+    private ?UserLoginDisableCmds $cliCmd = null;
 
     protected function setUp(): void
     {
-        $stubPlugin = $this->createStub(User_Login_Disable::class);
-        $this->cliCmd = new User_Login_Disable_CLI_Command($stubPlugin);
+        $stubPlugin = $this->createStub(UserLoginDisablePlugin::class);
+        $this->cliCmd = new UserLoginDisableCmds($stubPlugin);
     }
 
     public function testFilterUsersByArgs()

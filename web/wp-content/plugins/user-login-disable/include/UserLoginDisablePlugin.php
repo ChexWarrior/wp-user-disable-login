@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-class User_Login_Disable
+class UserLoginDisablePlugin
 {
 	/**
 	 * This class is a singleton
 	 */
-	static ?User_Login_Disable $instance = null;
+	static ?UserLoginDisablePlugin $instance = null;
 
 	private function __construct()
 	{
@@ -37,7 +37,7 @@ class User_Login_Disable
 		register_uninstall_hook(__FILE__, 'User_Login_Disable::uninstall_plugin');
 	}
 
-	public static function get_instance(): User_Login_Disable
+	public static function get_instance(): UserLoginDisablePlugin
 	{
 		if (!self::$instance) {
 			self::$instance = new self;
