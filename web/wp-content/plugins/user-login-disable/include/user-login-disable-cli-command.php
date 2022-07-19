@@ -124,7 +124,7 @@ class User_Login_Disable_CLI_Command
 			return get_users($query_args);
 		}
 
-		['user_ids' => $ids, 'user_name_emails' => $names_emails] = $this->split_ids_from_names_emails($userArgs);
+		['user_ids' => $ids, 'user_logins_emails' => $logins_emails] = $this->split_ids_from_login_emails($userArgs);
 
         $query_args = [
             'fields' => ['ID', 'user_login', 'user_email'],
@@ -134,29 +134,29 @@ class User_Login_Disable_CLI_Command
 
         $user_info = get_users($query_args);
 
-		return $this->filter_users_by_args($user_info, $ids, $names_emails);
+		return $this->filter_users_by_args($user_info, $ids, $logins_emails);
     }
 
 	/**
 	 * Filters list of user information by user login, id or email
-	 * 
+	 *
 	 * @param stdObject[] $user_info
 	 * @param string[] $user_ids
-	 * @param string[] $user_names_emails
+	 * @param string[] $user_logins_emails
 	 * @return string[] Array of matching user ids
 	 */
-	public function filter_users_by_args(array $user_info, array $user_ids, array $user_names_emails): array
+	public function filter_users_by_args(array $user_info, array $user_ids, array $user_logins_emails): array
 	{
-		$matching_users = array_filter($user_info, function ($i) use ($user_ids, $user_names_emails) {
+		$matching_users = array_filter($user_info, function ($i) use ($user_ids, $user_logins_emails) {
 			if (in_array($i->ID, $user_ids)) {
 				return true;
 			}
 
-			if (in_array($i->user_login, $user_names_emails)) {
+			if (in_array($i->user_login, $user_logins_emails)) {
 				return true;
 			}
 
-			if (in_array($i->user_email, $user_names_emails)) {
+			if (in_array($i->user_email, $user_logins_emails)) {
 				return true;
 			}
 
@@ -167,13 +167,13 @@ class User_Login_Disable_CLI_Command
 	}
 
 	/**
-	 * Takes a list of user emails, user names and ids and returns
+	 * Takes a list of user emails, user logins and ids and returns
 	 * an array with two values: one contains an array of the user ids passed in
-	 * and another array with all the usernames and emails
-	 * @param array $args
+	 * and another array with all the logins and emails
+	 * @param  string[] $args - Array containing user ids, emails and login
 	 * @return array
 	 */
-	public function split_ids_from_names_emails(array $args): array
+	public function split_ids_from_login_emails(array $args): array
 	{
 		$non_ids = [];
 		$ids = array_filter($args, function($i) use (&$non_ids) {
@@ -188,7 +188,7 @@ class User_Login_Disable_CLI_Command
 
 		return [
 			'user_ids' => $ids,
-			'user_name_emails' => $non_ids,
+			'user_logins_emails' => $non_ids,
 		];
 	}
 }
