@@ -70,7 +70,7 @@ class User_Login_Disable_CLI_Command
 		if (empty($user_args) && empty($assoc_args)) {
 			WP_CLI::error('Please specify one or more users, or use --all');
 		}
-		
+
 		['all' => $allFlag] = $assoc_args;
 		$user_ids = $this->run_user_query(
 			$allFlag === true,
@@ -134,25 +134,37 @@ class User_Login_Disable_CLI_Command
 
         $user_info = get_users($query_args);
 
-		// Filter out users who don't match an ID, name or email param
-		$user_info = array_filter($user_info, function($i) use ($ids, $names_emails) {
-			if (in_array($i->ID, $ids)) {
+		return $this->filter_users_by_args($user_info, $ids, $names_emails);
+    }
+
+	/**
+	 * Filters list of user information by user login, id or email
+	 * 
+	 * @param stdObject[] $user_info
+	 * @param string[] $user_ids
+	 * @param string[] $user_names_emails
+	 * @return string[] Array of matching user ids
+	 */
+	public function filter_users_by_args(array $user_info, array $user_ids, array $user_names_emails): array
+	{
+		$matching_users = array_filter($user_info, function ($i) use ($user_ids, $user_names_emails) {
+			if (in_array($i->ID, $user_ids)) {
 				return true;
 			}
 
-			if (in_array($i->user_login, $names_emails)) {
+			if (in_array($i->user_login, $user_names_emails)) {
 				return true;
 			}
 
-			if (in_array($i->user_email, $names_emails)) {
+			if (in_array($i->user_email, $user_names_emails)) {
 				return true;
 			}
 
 			return false;
 		});
 
-		return array_map(fn($i) => $i->ID, $user_info);
-    }
+		return array_map(fn ($i) => $i->ID, $matching_users);
+	}
 
 	/**
 	 * Takes a list of user emails, user names and ids and returns
@@ -161,7 +173,7 @@ class User_Login_Disable_CLI_Command
 	 * @param array $args
 	 * @return array
 	 */
-	private function split_ids_from_names_emails(array $args): array
+	public function split_ids_from_names_emails(array $args): array
 	{
 		$non_ids = [];
 		$ids = array_filter($args, function($i) use (&$non_ids) {
