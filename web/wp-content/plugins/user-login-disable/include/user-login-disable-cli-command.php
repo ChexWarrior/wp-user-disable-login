@@ -36,7 +36,12 @@ class User_Login_Disable_CLI_Command
 	 */
 	public function enable_users(array $user_args = [], array $assoc_args = []): void
 	{
+		if (empty($user_args) && empty($assoc_args)) {
+			WP_CLI::error('Please specify one or more users, or use --all');
+		}
+
 		['all' => $allFlag] = $assoc_args;
+
 		$user_ids = $this->run_user_query(
 			$allFlag === true,
 			false,
@@ -62,6 +67,10 @@ class User_Login_Disable_CLI_Command
 	 */
 	public function disable_users(array $user_args = [], array $assoc_args = []): void
 	{
+		if (empty($user_args) && empty($assoc_args)) {
+			WP_CLI::error('Please specify one or more users, or use --all');
+		}
+		
 		['all' => $allFlag] = $assoc_args;
 		$user_ids = $this->run_user_query(
 			$allFlag === true,
