@@ -9,7 +9,7 @@ class UserLoginDisableCmds
 		$this->userLoginDisable = $userLoginDisable;
 	}
 
-	public function verify_user_ids(array $args): void
+	public function verifyUserIds(array $args): void
 	{
 		if (!is_array($args) || empty($args)) {
 			WP_CLI::error("Must pass array of user ids!");
@@ -34,9 +34,9 @@ class UserLoginDisableCmds
 	 * : If this flag is included then all users in site will be enabled
 	 *
 	 */
-	public function enable_users(array $user_args = [], array $assoc_args = []): void
+	public function enableUsers(array $user_args = [], array $assoc_args = []): void
 	{
-		$this->run_command($user_args, $assoc_args, true);
+		$this->runCommand($user_args, $assoc_args, true);
 	}
 
 	/**
@@ -51,19 +51,19 @@ class UserLoginDisableCmds
 	 * : If this flag is included then all non-admin users in site will be disabled
 	 *
 	 */
-	public function disable_users(array $user_args = [], array $assoc_args = []): void
+	public function disableUsers(array $user_args = [], array $assoc_args = []): void
 	{
-		$this->run_command($user_args, $assoc_args, false);
+		$this->runCommand($user_args, $assoc_args, false);
 	}
 
-	private function run_command(array $user_args, array $assoc_args, bool $enableUsers): void
+	private function runCommand(array $user_args, array $assoc_args, bool $enableUsers): void
 	{
 		if (empty($user_args) && empty($assoc_args)) {
 			WP_CLI::error('Please specify one or more users, or use --all');
 		}
 
 		['all' => $allFlag] = $assoc_args;
-		$user_ids = $this->run_user_query(
+		$user_ids = $this->runUserQuery(
 			$allFlag === true,
 			!$enableUsers,
 			$user_args,
@@ -83,7 +83,7 @@ class UserLoginDisableCmds
 	 * @param bool $getEnabledUsers - If true we are getting users who are enabled, otherwise we're getting users who are disabled
 	 * @param array $userArgs
 	 */
-    private function run_user_query(bool $getAll, bool $getEnabledUsers, array $userArgs = []): array
+    private function runUserQuery(bool $getAll, bool $getEnabledUsers, array $userArgs = []): array
     {
         // Default to getting enabled users
         $meta = [
@@ -117,7 +117,7 @@ class UserLoginDisableCmds
 			return get_users($query_args);
 		}
 
-		['user_ids' => $ids, 'user_logins_emails' => $logins_emails] = $this->split_ids_from_login_emails($userArgs);
+		['user_ids' => $ids, 'user_logins_emails' => $logins_emails] = $this->splitIdsFromLoginEmails($userArgs);
 
         $query_args = [
             'fields' => ['ID', 'user_login', 'user_email'],
@@ -127,7 +127,7 @@ class UserLoginDisableCmds
 
         $user_info = get_users($query_args);
 
-		return $this->filter_users_by_args($user_info, $ids, $logins_emails);
+		return $this->filterUsersByArgs($user_info, $ids, $logins_emails);
     }
 
 	/**
@@ -138,7 +138,7 @@ class UserLoginDisableCmds
 	 * @param string[] $user_logins_emails
 	 * @return string[] Array of matching user ids
 	 */
-	public function filter_users_by_args(array $user_info, array $user_ids, array $user_logins_emails): array
+	public function filterUsersByArgs(array $user_info, array $user_ids, array $user_logins_emails): array
 	{
 		$matching_users = array_filter($user_info, function ($i) use ($user_ids, $user_logins_emails) {
 			if (in_array($i->ID, $user_ids)) {
@@ -166,7 +166,7 @@ class UserLoginDisableCmds
 	 * @param  string[] $args - Array containing user ids, emails and login
 	 * @return array
 	 */
-	public function split_ids_from_login_emails(array $args): array
+	public function splitIdsFromLoginEmails(array $args): array
 	{
 		$non_ids = [];
 		$ids = array_filter($args, function($i) use (&$non_ids) {
