@@ -33,8 +33,8 @@ class UserLoginDisablePlugin
 		add_filter('bulk_actions-users', [$this, 'registerBulkActions']);
 		add_filter('handle_bulk_actions-users', [$this, 'processBulkActions'], 10, 3);
 
-		register_activation_hook(__FILE__, 'User_Login_Disable::activate_plugin');
-		register_uninstall_hook(__FILE__, 'User_Login_Disable::uninstall_plugin');
+		register_activation_hook(__FILE__, 'User_Login_Disable::activatePlugin');
+		register_uninstall_hook(__FILE__, 'User_Login_Disable::uninstallPlugin');
 	}
 
 	public static function getInstance(): UserLoginDisablePlugin
