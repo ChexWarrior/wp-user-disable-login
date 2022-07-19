@@ -11,33 +11,33 @@ class UserLoginDisablePlugin
 	{
 		// Setup hooks
 		// Handles showing or hiding the field for enabling/disabling user login
-		add_action('show_user_profile', [$this, 'usermeta_form_field_disabled']);
-		add_action('edit_user_profile', [$this, 'usermeta_form_field_disabled']);
-		add_action('personal_options_update', [$this, 'usermeta_form_field_disabled_update']);
-		add_action('edit_user_profile_update', [$this, 'usermeta_form_field_disabled_update']);
+		add_action('show_user_profile', [$this, 'addDisabledFormField']);
+		add_action('edit_user_profile', [$this, 'addDisabledFormField']);
+		add_action('personal_options_update', [$this, 'updateDisabledFormField']);
+		add_action('edit_user_profile_update', [$this, 'updateDisabledFormField']);
 
 		// Handles checking if a user is disabled when they're authenicated with WP
-		add_filter('wp_authenticate_user', [$this, 'check_if_user_disabled'], 10, 2);
+		add_filter('wp_authenticate_user', [$this, 'checkIfUserDisabled'], 10, 2);
 
 		// Checks if a user is disabled when using an app password with API
-		add_action('wp_authenticate_application_password_errors', [$this, 'check_if_user_disabled_for_api'], 10, 4);
+		add_action('wp_authenticate_application_password_errors', [$this, 'checkIfUserDisabledForAPI'], 10, 4);
 
 		// Add User Disabled column to admin user's list
-		add_filter('manage_users_columns', [$this, 'add_user_disabled_column']);
-		add_filter('manage_users_custom_column', [$this, 'show_user_disabled_column'], 10, 3);
+		add_filter('manage_users_columns', [$this, 'addUserDisabledColumn']);
+		add_filter('manage_users_custom_column', [$this, 'showUserDisabledColumn'], 10, 3);
 
 		// Update Admin Notices for plugin functionality
-		add_action('admin_notices', [$this, 'enable_disable_bulk_notification']);
+		add_action('admin_notices', [$this, 'bulkActionNotifications']);
 
 		// Handle Bulk Actions for enabling/disabling users
-		add_filter('bulk_actions-users', [$this, 'register_enable_disable_bulk_actions']);
-		add_filter('handle_bulk_actions-users', [$this, 'handle_enable_disable_bulk_actions'], 10, 3);
+		add_filter('bulk_actions-users', [$this, 'registerBulkActions']);
+		add_filter('handle_bulk_actions-users', [$this, 'processBulkActions'], 10, 3);
 
 		register_activation_hook(__FILE__, 'User_Login_Disable::activate_plugin');
 		register_uninstall_hook(__FILE__, 'User_Login_Disable::uninstall_plugin');
 	}
 
-	public static function get_instance(): UserLoginDisablePlugin
+	public static function getInstance(): UserLoginDisablePlugin
 	{
 		if (!self::$instance) {
 			self::$instance = new self;
@@ -46,7 +46,7 @@ class UserLoginDisablePlugin
 		return self::$instance;
 	}
 
-	public function usermeta_form_field_disabled(WP_User $user): void
+	public function addDisabledFormField(WP_User $user): void
 	{
 		if (!in_array('administrator', $user->roles) && current_user_can('disable_users')) : ?>
 			<h3>Disable User Login</h3>
@@ -70,7 +70,7 @@ class UserLoginDisablePlugin
 	}
 
 	// Update actual user disabled metadata
-	public function update_disable_metadata(bool $is_disabled, int|string $user_id):int|bool
+	public function updateDisabledMetadata(bool $is_disabled, int|string $user_id):int|bool
 	{
 		// Administrators cannot be disabled
 		$user = get_userdata($user_id);
@@ -92,7 +92,7 @@ class UserLoginDisablePlugin
 	}
 
 	// Ensure meta data is updated and disabled users are logged out
-	public function usermeta_form_field_disabled_update(int $user_id): int|bool
+	public function updateDisabledFormField(int $user_id): int|bool
 	{
 		if (!current_user_can('edit_user', $user_id)) {
 			return false;
@@ -100,11 +100,11 @@ class UserLoginDisablePlugin
 
 		$disabled = $_POST['disabled'] === 'on';
 
-		return $this->update_disable_metadata($disabled, $user_id);
+		return $this->updateDisabledMetadata($disabled, $user_id);
 	}
 
 	// Ensure we check disabled meta when a user logs in
-	public function check_if_user_disabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
+	public function checkIfUserDisabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
 	{
 		$disabled = get_user_meta($user->ID, 'disabled', true) === "1";
 
@@ -115,9 +115,9 @@ class UserLoginDisablePlugin
 		return $user;
 	}
 
-	public function check_if_user_disabled_for_api(WP_Error $error, WP_User $user, array $item, string $password): void
+	public function checkIfUserDisabledForAPI(WP_Error $error, WP_User $user, array $item, string $password): void
 	{
-		$disabled_user_error = $this->check_if_user_disabled($user, $password);
+		$disabled_user_error = $this->checkIfUserDisabled($user, $password);
 
 		if ($disabled_user_error instanceof WP_Error) {
 			$error->add(
@@ -127,7 +127,7 @@ class UserLoginDisablePlugin
 		}
 	}
 
-	public function add_user_disabled_column(array $columns): array
+	public function addUserDisabledColumn(array $columns): array
 	{
 		$check_column = $columns['cb'];
 		unset($columns['cb']);
@@ -140,7 +140,7 @@ class UserLoginDisablePlugin
 		);
 	}
 
-	public function show_user_disabled_column(string $value, string $column_name, int $user_id): string
+	public function showUserDisabledColumn(string $value, string $column_name, int $user_id): string
 	{
 		if ($column_name === 'user_disabled') {
 			$user_data = get_userdata($user_id);
@@ -151,11 +151,11 @@ class UserLoginDisablePlugin
 		return $value;
 	}
 
-	public function enable_disable_users(string $action, array $user_ids): int
+	public function enableDisableUsers(string $action, array $user_ids): int
 	{
 		$count = 0;
 		foreach ($user_ids as $id) {
-			$this->update_disable_metadata(
+			$this->updateDisabledMetadata(
 				$action === 'disable_user',
 				$id
 			);
@@ -166,7 +166,7 @@ class UserLoginDisablePlugin
 	}
 
 
-	public function register_enable_disable_bulk_actions(array $bulk_actions): array
+	public function registerBulkActions(array $bulk_actions): array
 	{
 		$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
 		$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
@@ -174,10 +174,10 @@ class UserLoginDisablePlugin
 		return $bulk_actions;
 	}
 
-	public function handle_enable_disable_bulk_actions(string $redirect_url, string $action_name, array $user_ids): string
+	public function processBulkActions(string $redirect_url, string $action_name, array $user_ids): string
 	{
 		if ($action_name === 'disable_user' || $action_name === 'enable_user') {
-			$count = $this->enable_disable_users($action_name, $user_ids);
+			$count = $this->enableDisableUsers($action_name, $user_ids);
 
 			return add_query_arg($action_name, $count, $redirect_url);
 		}
@@ -185,7 +185,7 @@ class UserLoginDisablePlugin
 		return $redirect_url;
 	}
 
-	public function enable_disable_bulk_notification(): void
+	public function bulkActionNotifications(): void
 	{
 		if (!empty($_REQUEST['disable_user'])) {
 			$count = intval($_REQUEST['disable_user']);
@@ -206,7 +206,7 @@ class UserLoginDisablePlugin
 		}
 	}
 
-	public static function uninstall_plugin(): void
+	public static function uninstallPlugin(): void
 	{
 		// Remove disabled user metadata from all users
 		delete_metadata('user', -1, 'disabled', null, true);
@@ -216,7 +216,7 @@ class UserLoginDisablePlugin
 		$role->remove_cap('disable_users');
 	}
 
-	public static function activate_plugin(): void
+	public static function activatePlugin(): void
 	{
 		// Give capability for disabling users to admins only
 		$role = get_role('administrator');

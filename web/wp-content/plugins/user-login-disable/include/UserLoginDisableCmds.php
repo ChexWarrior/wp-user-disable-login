@@ -71,7 +71,7 @@ class UserLoginDisableCmds
 
 		$command = $enableUsers ? 'enable_user' : 'disable_user';
 
-		$count = $this->userLoginDisable->enable_disable_users($command, $user_ids);
+		$count = $this->userLoginDisable->enableDisableUsers($command, $user_ids);
 
 		WP_CLI::success("Disabled $count user(s)");
 	}
