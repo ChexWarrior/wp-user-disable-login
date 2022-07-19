@@ -185,9 +185,3 @@ class User_Login_Disable_CLI_Command
 		];
 	}
 }
-
-// Register our commands
-$cli_commmands = new User_Login_Disable_CLI_Command(User_Login_Disable::get_instance());
-
-WP_CLI::add_command('user enable', [$cli_commmands, 'enable_users']);
-WP_CLI::add_command('user disable', [$cli_commmands, 'disable_users']);
