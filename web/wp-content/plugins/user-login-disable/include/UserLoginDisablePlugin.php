@@ -168,11 +168,12 @@ class UserLoginDisablePlugin
 		return $count;
 	}
 
-
 	public function registerBulkActions(array $bulk_actions): array
 	{
-		$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
-		$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
+		if (current_user_can('disable_users')) {
+			$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
+			$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
+		}
 
 		return $bulk_actions;
 	}
