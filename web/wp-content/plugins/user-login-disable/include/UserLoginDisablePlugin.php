@@ -180,7 +180,7 @@ class UserLoginDisablePlugin
 
 	public function processBulkActions(string $redirect_url, string $action_name, array $user_ids): string
 	{
-		if ($action_name === 'disable_user' || $action_name === 'enable_user') {
+		if (current_user_can('disable_users') && ($action_name === 'disable_user' || $action_name === 'enable_user')) {
 			$opposite_action = $action_name === 'disable_user' ? 'enable_user' : 'disable_user';
 			$count = $this->enableDisableUsers($action_name, $user_ids);
 			$returnUrl = remove_query_arg($opposite_action, $redirect_url);
