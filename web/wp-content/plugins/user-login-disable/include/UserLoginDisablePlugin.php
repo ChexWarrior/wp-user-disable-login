@@ -4,6 +4,7 @@ namespace Chexwarrior;
 
 use \WP_User;
 use \WP_Error;
+use \WP_Session_Tokens;
 
 class UserLoginDisablePlugin
 {
