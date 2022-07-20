@@ -58,7 +58,7 @@ class UserLoginDisableCmdsTest extends TestCase
 	}
 
 	// TESTS
-    public function testUserCanBeDisabledAndEnabled()
+    public function testUserCanBeDisabledAndEnabledById()
     {
         $this->disableUsers([$this->author1Info['id']]);
 		$this->assertTrue($this->isUserDisabled($this->author1Info['id']));
@@ -67,7 +67,7 @@ class UserLoginDisableCmdsTest extends TestCase
 		$this->assertFalse($this->isUserDisabled($this->author1Info['id']));
     }
 
-	public function testMultipleUsersCanBeDisabledAndEnabled()
+	public function testMultipleUsersCanBeDisabledAndEnabledById()
 	{
 		$this->disableUsers([
 			$this->author1Info['id'],
