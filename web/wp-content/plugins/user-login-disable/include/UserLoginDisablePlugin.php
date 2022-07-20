@@ -180,9 +180,11 @@ class UserLoginDisablePlugin
 	public function processBulkActions(string $redirect_url, string $action_name, array $user_ids): string
 	{
 		if ($action_name === 'disable_user' || $action_name === 'enable_user') {
+			$opposite_action = $action_name === 'disable_user' ? 'enable_user' : 'disable_user';
 			$count = $this->enableDisableUsers($action_name, $user_ids);
+			$returnUrl = remove_query_arg($opposite_action, $redirect_url);
 
-			return add_query_arg($action_name, $count, $redirect_url);
+			return add_query_arg($action_name, $count, $returnUrl);
 		}
 
 		return $redirect_url;
@@ -193,7 +195,7 @@ class UserLoginDisablePlugin
 		if (!empty($_REQUEST['disable_user'])) {
 			$count = intval($_REQUEST['disable_user']);
 			echo <<<HTML
-			<div class="notice notice-info is-dismissible">
+			<div class="notice notice-success is-dismissible">
 				<p>Disabled $count user(s).</p>
 			</div>
 			HTML;
@@ -202,7 +204,7 @@ class UserLoginDisablePlugin
 		if (!empty($_REQUEST['enable_user'])) {
 			$count = intval($_REQUEST['enable_user']);
 			echo <<<HTML
-			<div class="notice notice-info is-dismissible">
+			<div class="notice notice-success is-dismissible">
 				<p>Enabled $count user(s).</p>
 			</div>
 			HTML;
