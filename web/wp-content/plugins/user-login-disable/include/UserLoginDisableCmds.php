@@ -66,9 +66,13 @@ class UserLoginDisableCmds
 			WP_CLI::error('Please specify one or more users, or use --all');
 		}
 
-		['all' => $allFlag] = $assoc_args;
+		$allFlag = false;
+		if (array_key_exists('all', $assoc_args)) {
+			$allFlag = true;
+		}
+
 		$user_ids = $this->runUserQuery(
-			$allFlag === true,
+			$allFlag,
 			!$enableUsers,
 			$user_args,
 		);
