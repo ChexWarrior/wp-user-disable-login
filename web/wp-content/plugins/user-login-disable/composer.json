@@ -4,7 +4,7 @@
     "license": "GPLv2",
     "autoload": {
         "psr-4": {
-            "Chexwarrior\\UserLoginDisable\\": "includes/"
+            "Chexwarrior\\": "include/"
         }
     },
     "authors": [
