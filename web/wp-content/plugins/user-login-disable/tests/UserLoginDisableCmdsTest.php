@@ -14,23 +14,22 @@ class UserLoginDisableCmdsTest extends TestCase
     private ?UserLoginDisableCmds $cliCmd = null;
 	private string $wpFullPath = '/var/www/html/web';
 
-	protected function runWpCliCmd(string $cmd, array $params)
+	protected function runWpCliCmd(string $cmd, array $params): ?string
 	{
 		$paramStr = implode(' ', $params);
-		return trim(shell_exec("wp --path={$this->wpFullPath} $cmd $paramStr"));
+		$output = shell_exec("wp --path={$this->wpFullPath} $cmd $paramStr");
+
+		if (empty($output)) return null;
+
+		return trim($output);
 	}
 
-	protected function checkUserDisabled(string $userId)
+	protected function isUserDisabled(string $userId): bool
 	{
 		return $this->runWpCliCmd('user meta get', [$userId, 'disabled']) === '1';
 	}
 
-	protected function checkUserEnabled(string $userId)
-	{
-		return $this->runWpCliCmd('user meta get', [$userId, 'disabled']) !== '1';
-	}
-
-	protected function disableEnableUser(bool $disable, string $userId, bool $all = false)
+	private function runPluginCliCmd(bool $disable, string $userId, bool $all)
 	{
 		$params = [$userId];
 
@@ -41,16 +40,28 @@ class UserLoginDisableCmdsTest extends TestCase
 		return $this->runWpCliCmd("user $action", $params);
 	}
 
+	protected function disableUser(string $userId, bool $all = false)
+	{
+		return $this->runPluginCliCmd(true, $userId, $all);
+	}
+
+	protected function enableUser(string $userId, bool $all = false)
+	{
+		return $this->runPluginCliCmd(false, $userId, $all);
+	}
+
     // protected function setUp(): void
     // {
     //     $stubPlugin = $this->createStub(UserLoginDisablePlugin::class);
     //     $this->cliCmd = new UserLoginDisableCmds($stubPlugin);
     // }
 
-    public function testUserCanBeDisabled()
+    public function testUserCanBeDisabledAndEnabled()
     {
-        $this->disableEnableUser(true, '2');
+        $this->disableUser('2');
+		$this->assertTrue($this->isUserDisabled('2'));
 
-		$this->assertTrue($this->checkUserDisabled('2'));
+		$this->enableUser('2');
+		$this->assertFalse($this->isUserDisabled('2'));
     }
 }
