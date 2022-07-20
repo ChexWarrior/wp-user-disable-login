@@ -29,9 +29,9 @@ class UserLoginDisableCmdsTest extends TestCase
 		return $this->runWpCliCmd('user meta get', [$userId, 'disabled']) === '1';
 	}
 
-	private function runPluginCliCmd(bool $disable, string $userId, bool $all): ?string
+	private function runPluginCliCmd(bool $disable, array $userId, bool $all): ?string
 	{
-		$params = [$userId];
+		$params = $userId;
 
 		if ($all) $params[] = '--all';
 
@@ -40,22 +40,22 @@ class UserLoginDisableCmdsTest extends TestCase
 		return $this->runWpCliCmd("user $action", $params);
 	}
 
-	protected function disableUser(string $userId, bool $all = false): void
+	protected function disableUsers(array $userIds, bool $all = false): void
 	{
-		$this->runPluginCliCmd(true, $userId, $all);
+		$this->runPluginCliCmd(true, $userIds, $all);
 	}
 
-	protected function enableUser(string $userId, bool $all = false): void
+	protected function enableUsers(array $userIds, bool $all = false): void
 	{
-		$this->runPluginCliCmd(false, $userId, $all);
+		$this->runPluginCliCmd(false, $userIds, $all);
 	}
 
     public function testUserCanBeDisabledAndEnabled()
     {
-        $this->disableUser('2');
+        $this->disableUsers(['2']);
 		$this->assertTrue($this->isUserDisabled('2'));
 
-		$this->enableUser('2');
+		$this->enableUsers(['2']);
 		$this->assertFalse($this->isUserDisabled('2'));
     }
 }
