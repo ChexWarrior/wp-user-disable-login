@@ -36,9 +36,9 @@ class UserLoginDisableCmdsTest extends TestCase
 		return $this->runWpCliCmd('user meta get', [$userId, 'disabled']) === '1';
 	}
 
-	private function runPluginCliCmd(bool $disable, array $userId, bool $all): ?string
+	private function runPluginCliCmd(bool $disable, array $userInfo, bool $all): ?string
 	{
-		$params = $userId;
+		$params = $userInfo;
 
 		if ($all) $params[] = '--all';
 
@@ -47,14 +47,14 @@ class UserLoginDisableCmdsTest extends TestCase
 		return $this->runWpCliCmd("user $action", $params);
 	}
 
-	protected function disableUsers(array $userIds, bool $all = false): void
+	protected function disableUsers(array $userInfo, bool $all = false): void
 	{
-		$this->runPluginCliCmd(true, $userIds, $all);
+		$this->runPluginCliCmd(true, $userInfo, $all);
 	}
 
-	protected function enableUsers(array $userIds, bool $all = false): void
+	protected function enableUsers(array $userInfo, bool $all = false): void
 	{
-		$this->runPluginCliCmd(false, $userIds, $all);
+		$this->runPluginCliCmd(false, $userInfo, $all);
 	}
 
 	// TESTS
@@ -66,4 +66,23 @@ class UserLoginDisableCmdsTest extends TestCase
 		$this->enableUsers([$this->author1Info['id']]);
 		$this->assertFalse($this->isUserDisabled($this->author1Info['id']));
     }
+
+	public function testMultipleUsersCanBeDisabledAndEnabled()
+	{
+		$this->disableUsers([
+			$this->author1Info['id'],
+			$this->author2Info['id'],
+		]);
+
+		$this->assertTrue($this->isUserDisabled($this->author1Info['id']));
+		$this->assertTrue($this->isUserDisabled($this->author2Info['id']));
+
+		$this->enableUsers([
+			$this->author1Info['id'],
+			$this->author2Info['id'],
+		]);
+
+		$this->assertFalse($this->isUserDisabled($this->author1Info['id']));
+		$this->assertFalse($this->isUserDisabled($this->author2Info['id']));
+	}
 }
