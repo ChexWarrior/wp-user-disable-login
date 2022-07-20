@@ -14,6 +14,13 @@ class UserLoginDisableCmdsTest extends TestCase
     private ?UserLoginDisableCmds $cliCmd = null;
 	private string $wpFullPath = '/var/www/html/web';
 
+	// Test user information
+	private array $admin1Info = ['id' => '1', 'name' => 'admin1',];
+	private array $author1Info = ['id' => '2', 'name' => 'author1'];
+	private array $admin2Info = ['id' => '3', 'name' => 'admin2'];
+	private array $author2Info = ['id' => '4', 'name' => 'author2'];
+
+	// Utility Methods
 	protected function runWpCliCmd(string $cmd, array $params): ?string
 	{
 		$paramStr = implode(' ', $params);
@@ -50,12 +57,13 @@ class UserLoginDisableCmdsTest extends TestCase
 		$this->runPluginCliCmd(false, $userIds, $all);
 	}
 
+	// TESTS
     public function testUserCanBeDisabledAndEnabled()
     {
-        $this->disableUsers(['2']);
-		$this->assertTrue($this->isUserDisabled('2'));
+        $this->disableUsers([$this->author1Info['id']]);
+		$this->assertTrue($this->isUserDisabled($this->author1Info['id']));
 
-		$this->enableUsers(['2']);
-		$this->assertFalse($this->isUserDisabled('2'));
+		$this->enableUsers([$this->author1Info['id']]);
+		$this->assertFalse($this->isUserDisabled($this->author1Info['id']));
     }
 }
