@@ -13,6 +13,9 @@ class UserLoginDisablePlugin
 	 */
 	static ?UserLoginDisablePlugin $instance = null;
 
+	// The custom capability created by this plugin
+	const DISABLE_USERS_CAP = 'disable_users';
+
 	private function __construct()
 	{
 		// Setup hooks
@@ -51,7 +54,7 @@ class UserLoginDisablePlugin
 
 	public function addDisabledFormField(WP_User $user): void
 	{
-		if (!in_array('administrator', $user->roles) && current_user_can('disable_users')) : ?>
+		if (!in_array('administrator', $user->roles) && current_user_can(self::DISABLE_USERS_CAP)) : ?>
 			<h3>Disable User Login</h3>
 			<table class="form-table">
 				<tr>
@@ -97,7 +100,7 @@ class UserLoginDisablePlugin
 	// Ensure meta data is updated and disabled users are logged out
 	public function updateDisabledFormField(int $user_id): int|bool
 	{
-		if (!current_user_can('edit_user', $user_id) || !current_user_can('disable_users')) {
+		if (!current_user_can('edit_user', $user_id) || !current_user_can(self::DISABLE_USERS_CAP)) {
 			return false;
 		}
 
@@ -170,7 +173,7 @@ class UserLoginDisablePlugin
 
 	public function registerBulkActions(array $bulk_actions): array
 	{
-		if (current_user_can('disable_users')) {
+		if (current_user_can(self::DISABLE_USERS_CAP)) {
 			$bulk_actions['disable_user'] = __('Disable User', 'disable_user');
 			$bulk_actions['enable_user'] = __('Enable User', 'enable_user');
 		}
@@ -180,7 +183,7 @@ class UserLoginDisablePlugin
 
 	public function processBulkActions(string $redirect_url, string $action_name, array $user_ids): string
 	{
-		if (current_user_can('disable_users') && ($action_name === 'disable_user' || $action_name === 'enable_user')) {
+		if (current_user_can(self::DISABLE_USERS_CAP) && ($action_name === 'disable_user' || $action_name === 'enable_user')) {
 			$opposite_action = $action_name === 'disable_user' ? 'enable_user' : 'disable_user';
 			$count = $this->enableDisableUsers($action_name, $user_ids);
 			$returnUrl = remove_query_arg($opposite_action, $redirect_url);
@@ -219,13 +222,13 @@ class UserLoginDisablePlugin
 
 		// Remove disable users capability
 		$role = get_role('administrator');
-		$role->remove_cap('disable_users');
+		$role->remove_cap(self::DISABLE_USERS_CAP);
 	}
 
 	public static function activatePlugin(): void
 	{
 		// Give capability for disabling users to admins only
 		$role = get_role('administrator');
-		$role->add_cap('disable_users', true);
+		$role->add_cap(self::DISABLE_USERS_CAP, true);
 	}
 }
