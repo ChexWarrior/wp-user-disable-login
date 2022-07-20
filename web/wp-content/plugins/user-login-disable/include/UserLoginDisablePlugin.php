@@ -97,7 +97,7 @@ class UserLoginDisablePlugin
 	// Ensure meta data is updated and disabled users are logged out
 	public function updateDisabledFormField(int $user_id): int|bool
 	{
-		if (!current_user_can('edit_user', $user_id)) {
+		if (!current_user_can('edit_user', $user_id) || !current_user_can('disable_users')) {
 			return false;
 		}
 
