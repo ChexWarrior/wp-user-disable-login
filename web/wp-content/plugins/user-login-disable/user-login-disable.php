@@ -15,8 +15,8 @@ require dirname(__FILE__) . '/vendor/autoload.php';
 $user_login_disable = Chexwarrior\UserLoginDisablePlugin::getInstance();
 
 // Register activation and uninstall hooks
-register_activation_hook(__FILE__, 'UserLoginDisablePlugin::activatePlugin');
-register_uninstall_hook(__FILE__, 'UserLoginDisablePlugin::uninstallPlugin');
+register_activation_hook(__FILE__, 'Chexwarrior\UserLoginDisablePlugin::activatePlugin');
+register_uninstall_hook(__FILE__, 'Chexwarrior\UserLoginDisablePlugin::uninstallPlugin');
 
 // Register our commands
 if (defined('WP_CLI') && !empty(WP_CLI)) {
