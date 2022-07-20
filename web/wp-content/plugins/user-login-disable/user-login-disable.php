@@ -1,6 +1,7 @@
 <?php declare(strict_types=1);
 /**
  * Plugin Name:     User Login Disable
+ * Plugin URI:		https://github.com/ChexWarrior/wp-user-disable-login
  * Description:     Allows admins to enable and disable users login
  * Author:          Chexwarrior
  * Version:         0.1.0

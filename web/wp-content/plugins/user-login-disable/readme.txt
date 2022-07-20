@@ -47,6 +47,12 @@ Very specific audit reasons at a job of mine, and I couldn't find another plugin
 1. The Disable field on a user profile
 2. Disabled users on the admin user list page
 
+== Support ==
+
+This plugin is developed on the author's own time so there is no guarantee that reported bugs will be fixed in a timely fashion.
+
+To report a bug please visit the plugin's [GitHub repository](https://github.com/ChexWarrior/wp-user-disable-login).
+
 == Changelog ==
 
 = 0.1 =
