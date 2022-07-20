@@ -18,7 +18,7 @@ class WpCliCommandTest extends TestCase
 
     public function testFilterUsersByArgs()
     {
-
+        
         $this->assertSame(1, 1);
     }
 }

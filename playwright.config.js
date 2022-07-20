@@ -4,7 +4,7 @@ const config = {
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     baseURL: process.env.BASE_URL,
-    testMatch: 'tests/integration/*.spec.js',
+    testMatch: 'tests/*.spec.js',
     maxFailures: 1,
   },
   workers: 1,
