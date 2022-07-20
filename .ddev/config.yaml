@@ -18,6 +18,7 @@ hooks:
     # Setup Test Site
     - exec: composer install
     - exec: wp --path=web core install --url=user-disable-test.ddev.site:8443 --title=Test --admin_user=admin1 --admin_password=password --admin_email=admin1@example.com --skip-email
+    - exec: composer -d /var/www/html/web/wp-content/plugins/user-login-disable install
     - exec: wp --path=web plugin activate user-login-disable
     - exec: ./scripts/setup-test-users.sh
 
