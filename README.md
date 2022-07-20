@@ -1,7 +1,7 @@
 # User Login Disable WordPress Plugin
 
 ## Description
-This plugin allows administrators to enable or disable other user accounts logins.
+This plugin allows administrators to enable or disable other user account's logins.
 
 When a user is disabled:
 * They can not login to the site
@@ -23,7 +23,7 @@ wp user disable <List of User IDs, Logins or Emails> [--all]
 ```
 
 ## Development
-This site uses [DDEV](https://ddev.com/) for local development, see that projects instructions for installation and setup.
+This site uses [DDEV](https://ddev.com/) for local development, see that project's instructions for installation and setup.
 
 ### Plugin Files
 The actual plugin files that appear on the WP Plugin directory are located in `web/wp-content/plugins/user-login-disable`.
