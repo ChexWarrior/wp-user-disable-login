@@ -29,7 +29,7 @@ class UserLoginDisableCmdsTest extends TestCase
 		return $this->runWpCliCmd('user meta get', [$userId, 'disabled']) === '1';
 	}
 
-	private function runPluginCliCmd(bool $disable, string $userId, bool $all)
+	private function runPluginCliCmd(bool $disable, string $userId, bool $all): ?string
 	{
 		$params = [$userId];
 
@@ -40,21 +40,15 @@ class UserLoginDisableCmdsTest extends TestCase
 		return $this->runWpCliCmd("user $action", $params);
 	}
 
-	protected function disableUser(string $userId, bool $all = false)
+	protected function disableUser(string $userId, bool $all = false): void
 	{
-		return $this->runPluginCliCmd(true, $userId, $all);
+		$this->runPluginCliCmd(true, $userId, $all);
 	}
 
-	protected function enableUser(string $userId, bool $all = false)
+	protected function enableUser(string $userId, bool $all = false): void
 	{
-		return $this->runPluginCliCmd(false, $userId, $all);
+		$this->runPluginCliCmd(false, $userId, $all);
 	}
-
-    // protected function setUp(): void
-    // {
-    //     $stubPlugin = $this->createStub(UserLoginDisablePlugin::class);
-    //     $this->cliCmd = new UserLoginDisableCmds($stubPlugin);
-    // }
 
     public function testUserCanBeDisabledAndEnabled()
     {
