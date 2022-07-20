@@ -2,6 +2,8 @@
 
 namespace Chexwarrior;
 
+use \WP_CLI;
+
 class UserLoginDisableCmds
 {
 	private UserLoginDisablePlugin $userLoginDisable;
@@ -75,7 +77,7 @@ class UserLoginDisableCmds
 
 		$count = $this->userLoginDisable->enableDisableUsers($command, $user_ids);
 
-		WP_CLI::success("Disabled $count user(s)");
+		WP_CLI::success(($enableUsers ? "Enable" : "Disable") ." $count user(s)");
 	}
 
 	/**
