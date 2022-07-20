@@ -1,7 +1,7 @@
 === User Login Disable ===
 Contributors: chexwarrior
 Tags: users, login
-Requires at least: 4.5
+Requires at least: 5.6
 Tested up to: 6.0
 Requires PHP: 8.0
 Stable tag: 0.1.0
@@ -22,13 +22,11 @@ When a user is disabled:
 = WP-CLI Integration =
 This plugin integrates with WP-CLI and provides the following two commands:
 
-```bash
-# Enables the target users
-wp user enable <List of User IDs, Logins or Emails> [--all]
+	# Enables the target users
+	wp user enable <List of User IDs, Logins or Emails> [--all]
 
-# Disables the target users
-wp user disable <List of User IDs, Logins or Emails> [--all]
-```
+	# Disables the target users
+	wp user disable <List of User IDs, Logins or Emails> [--all]
 
 == Installation ==
 
