@@ -1,0 +1,19 @@
+{
+    "name": "chexwarrior/user-login-disable",
+    "description": "WordPress plugin for disabling user login",
+    "license": "GPLv2",
+    "autoload": {
+        "psr-4": {
+            "Chexwarrior\\UserLoginDisable\\": "includes/"
+        }
+    },
+    "authors": [
+        {
+            "name": "chexwarrior",
+            "email": "aplehm@gmail.com"
+        }
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^9.5"
+    }
+}
