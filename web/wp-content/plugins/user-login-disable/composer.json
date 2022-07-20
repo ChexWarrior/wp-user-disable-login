@@ -1,5 +1,6 @@
 {
     "name": "chexwarrior/user-login-disable",
+    "homepage": "https://github.com/ChexWarrior/wp-user-disable-login",
     "description": "WordPress plugin for disabling user login",
     "license": "GPLv2",
     "autoload": {
