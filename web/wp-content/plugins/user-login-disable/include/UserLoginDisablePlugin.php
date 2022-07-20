@@ -2,6 +2,9 @@
 
 namespace Chexwarrior;
 
+use \WP_User;
+use \WP_Error;
+
 class UserLoginDisablePlugin
 {
 	/**
