@@ -1,12 +1,10 @@
 <?php declare(strict_types=1);
 
 use PHPUnit\Framework\TestCase;
+use Chexwarrior\UserLoginDisablePlugin;
+use Chexwarrior\UserLoginDisableCmds;
 
-// Include our WP classes :/
-require dirname(__FILE__) . '/../../web/wp-content/plugins/user-login-disable/include/UserLoginDisablePlugin.php';
-require dirname(__FILE__) . '/../../web/wp-content/plugins/user-login-disable/include/UserLoginDisableCmds.php';
-
-class WpCliCommandTest extends TestCase
+class UserLoginDisableCmdsTest extends TestCase
 {
     private ?UserLoginDisableCmds $cliCmd = null;
 
@@ -18,7 +16,6 @@ class WpCliCommandTest extends TestCase
 
     public function testFilterUsersByArgs()
     {
-        
         $this->assertSame(1, 1);
     }
 }
