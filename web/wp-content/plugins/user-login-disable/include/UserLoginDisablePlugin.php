@@ -75,6 +75,11 @@ class UserLoginDisablePlugin
 	// Update actual user disabled metadata
 	public function updateDisabledMetadata(bool $is_disabled, int|string $user_id):int|bool
 	{
+		// Add a final perm check
+		if (!current_user_can('disable_users')) {
+			return false;
+		}
+
 		// Administrators cannot be disabled
 		$user = get_userdata($user_id);
 		if (in_array('administrator', $user->roles)) {
