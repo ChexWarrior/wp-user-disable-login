@@ -74,7 +74,7 @@ class UserLoginDisablePlugin
 		<?php endif;
 	}
 
-	// Update actual user disabled metadata
+	// Update actual user disabled metadata and run associated functionality
 	public function updateDisabledMetadata(bool $is_disabled, int|string $user_id):int|bool
 	{
 		// Administrators cannot be disabled
@@ -96,6 +96,16 @@ class UserLoginDisablePlugin
 		);
 	}
 
+	public function disableUser(int|string $user_id): bool
+	{
+		return $this->updateDisabledMetadata(true, $user_id) !== false;
+	}
+
+	public function enableUser(int|string $user_id): bool
+	{
+		return $this->updateDisabledMetadata(false, $user_id) !== false;
+	}
+
 	/**
 	 * This method servers as a wrapper for get_user_meta
 	 *
@@ -115,15 +125,17 @@ class UserLoginDisablePlugin
 	}
 
 	// Ensure meta data is updated and disabled users are logged out
-	public function updateDisabledFormField(int $user_id): int|bool
+	public function updateDisabledFormField(int $user_id): bool
 	{
 		if (!current_user_can('edit_user', $user_id) || !current_user_can(self::DISABLE_USERS_CAP)) {
 			return false;
 		}
 
-		$disabled = $_POST['disabled'] === 'on';
+		if ($_POST['disabled'] === 'on') {
+			return $this->disableUser($user_id);
+		}
 
-		return $this->updateDisabledMetadata($disabled, $user_id);
+		return $this->enableUser($user_id);
 	}
 
 	// Ensure we check disabled meta when a user logs in
@@ -172,15 +184,24 @@ class UserLoginDisablePlugin
 		return $value;
 	}
 
+	/**
+	 * Handles user meta updates for multiple users
+	 * @param string $action
+	 * @param array $user_ids
+	 * @return int
+	 */
 	public function enableDisableUsers(string $action, array $user_ids): int
 	{
 		$count = 0;
+		$success = false;
 		foreach ($user_ids as $id) {
-			$this->updateDisabledMetadata(
-				$action === 'disable_user',
-				$id
-			);
-			$count += 1;
+			if ($action === 'disable_user') {
+				$success = $this->disableUser($id);
+			} else {
+				$success = $this->enableUser($id);
+			}
+
+			if ($success) $count += 1;
 		}
 
 		return $count;
