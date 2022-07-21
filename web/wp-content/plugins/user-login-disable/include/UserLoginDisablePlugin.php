@@ -63,8 +63,7 @@ class UserLoginDisablePlugin
 					</th>
 					<td>
 						<input type="checkbox" id="disabled" name="disabled" <?php
-						echo esc_attr(get_user_meta($user->ID, 'disabled', true))
-							? 'checked' : '' ?>
+						echo $this->isUserDisabled($user->ID) ? 'checked' : '' ?>
 							title="If checked user will not be able to login" required>
 						<p class="description">
 							If checked user will not be able to login.
@@ -97,6 +96,24 @@ class UserLoginDisablePlugin
 		);
 	}
 
+	/**
+	 * This method servers as a wrapper for get_user_meta
+	 *
+	 * A user who is NOT disabled (enabled) or doesn't
+	 * have a metadata value in the db (implying they are also
+	 * enabled) will return an empty string.  A user who is
+	 * disabled will return a "1".
+	 *
+	 * @param int|string $user_id
+	 * @return bool True if user is disable, false if enabled
+	 */
+	public function isUserDisabled(int|string $user_id): bool
+	{
+		$isDisabled = get_user_meta($user_id, 'disabled', true);
+
+		return $isDisabled === "1" ? true : false;
+	}
+
 	// Ensure meta data is updated and disabled users are logged out
 	public function updateDisabledFormField(int $user_id): int|bool
 	{
@@ -112,9 +129,7 @@ class UserLoginDisablePlugin
 	// Ensure we check disabled meta when a user logs in
 	public function checkIfUserDisabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
 	{
-		$disabled = get_user_meta($user->ID, 'disabled', true) === "1";
-
-		if ($disabled) {
+		if ($this->isUserDisabled($user->ID)) {
 			return new WP_Error('user_disabled', 'User is disabled', $user->ID);
 		}
 
