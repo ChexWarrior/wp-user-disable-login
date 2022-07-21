@@ -4,8 +4,11 @@
  * Plugin URI:		https://github.com/ChexWarrior/wp-user-disable-login
  * Description:     Allows admins to enable and disable users login
  * Author:          Chexwarrior
+ * Author URI:		https://github.com/ChexWarrior
  * Version:         0.1.0
  * Requires PHP: 	8.0
+ * License:			GPLv2
+ * License URI:		https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC3
  *
  * @package         User_Login_Disable
  */
