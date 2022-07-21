@@ -26,7 +26,7 @@ class UserLoginDisablePlugin
 		add_action('edit_user_profile_update', [$this, 'updateDisabledFormField']);
 
 		// Handles checking if a user is disabled when they're authenicated with WP
-		add_filter('wp_authenticate_user', [$this, 'checkIfUserDisabled'], 10, 2);
+		add_filter('wp_authenticate_user', [$this, 'createErrorIfUserDisabled'], 10, 2);
 
 		// Checks if a user is disabled when using an app password with API
 		add_action('wp_authenticate_application_password_errors', [$this, 'checkIfUserDisabledForAPI'], 10, 4);
@@ -127,7 +127,7 @@ class UserLoginDisablePlugin
 	}
 
 	// Ensure we check disabled meta when a user logs in
-	public function checkIfUserDisabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
+	public function createErrorIfUserDisabled(WP_User|WP_Error $user, string $password): WP_User|WP_Error
 	{
 		if ($this->isUserDisabled($user->ID)) {
 			return new WP_Error('user_disabled', 'User is disabled', $user->ID);
@@ -138,7 +138,7 @@ class UserLoginDisablePlugin
 
 	public function checkIfUserDisabledForAPI(WP_Error $error, WP_User $user, array $item, string $password): void
 	{
-		$disabled_user_error = $this->checkIfUserDisabled($user, $password);
+		$disabled_user_error = $this->createErrorIfUserDisabled($user, $password);
 
 		if ($disabled_user_error instanceof WP_Error) {
 			$error->add(
