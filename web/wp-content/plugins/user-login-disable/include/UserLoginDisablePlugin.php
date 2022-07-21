@@ -106,6 +106,26 @@ class UserLoginDisablePlugin
 		return $this->updateDisabledMetadata(false, $user_id) !== false;
 	}
 
+	public function enableMultipleUsers(array $user_ids): int
+	{
+		$count = 0;
+		array_walk($user_ids, function ($id) use (&$count) {
+			if ($this->enableUser($id)) $count += 1;
+		});
+
+		return $count;
+	}
+
+	public function disableMultipleUsers(array $user_ids): int
+	{
+		$count = 0;
+		array_walk($user_ids, function ($id) use (&$count) {
+			if ($this->disableUser($id)) $count += 1;
+		});
+
+		return $count;
+	}
+
 	/**
 	 * This method servers as a wrapper for get_user_meta
 	 *
