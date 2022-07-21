@@ -1,6 +1,6 @@
 === User Login Disable ===
 Contributors: chexwarrior
-Tags: users, login
+Tags: users, login, security, audit
 Requires at least: 5.6
 Tested up to: 6.0
 Requires PHP: 8.0
