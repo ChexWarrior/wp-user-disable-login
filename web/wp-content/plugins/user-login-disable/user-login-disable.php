@@ -9,8 +9,6 @@
  * Requires PHP: 	8.0
  * License:			GPLv2
  * License URI:		https://www.gnu.org/licenses/old-licenses/gpl-2.0.html#SEC3
- *
- * @package         User_Login_Disable
  */
 
 require dirname(__FILE__) . '/vendor/autoload.php';
