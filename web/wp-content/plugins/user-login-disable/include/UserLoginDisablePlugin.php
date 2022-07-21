@@ -204,29 +204,6 @@ class UserLoginDisablePlugin
 		return $value;
 	}
 
-	/**
-	 * Handles user meta updates for multiple users
-	 * @param string $action
-	 * @param array $user_ids
-	 * @return int
-	 */
-	public function enableDisableUsers(string $action, array $user_ids): int
-	{
-		$count = 0;
-		$success = false;
-		foreach ($user_ids as $id) {
-			if ($action === 'disable_user') {
-				$success = $this->disableUser($id);
-			} else {
-				$success = $this->enableUser($id);
-			}
-
-			if ($success) $count += 1;
-		}
-
-		return $count;
-	}
-
 	public function registerBulkActions(array $bulk_actions): array
 	{
 		if (current_user_can(self::DISABLE_USERS_CAP)) {
@@ -239,12 +216,20 @@ class UserLoginDisablePlugin
 
 	public function processBulkActions(string $redirect_url, string $action_name, array $user_ids): string
 	{
-		if (current_user_can(self::DISABLE_USERS_CAP) && ($action_name === 'disable_user' || $action_name === 'enable_user')) {
-			$opposite_action = $action_name === 'disable_user' ? 'enable_user' : 'disable_user';
-			$count = $this->enableDisableUsers($action_name, $user_ids);
-			$returnUrl = remove_query_arg($opposite_action, $redirect_url);
+		if (current_user_can(self::DISABLE_USERS_CAP)) {
+			if ($action_name === 'disable_user') {
+				$returnUrl = remove_query_arg('enable_user', $redirect_url);
+				$count = $this->disableMultipleUsers($user_ids);
 
-			return add_query_arg($action_name, $count, $returnUrl);
+				return add_query_arg('disable_user', $count, $returnUrl);;
+			}
+
+			if ($action_name === 'enable_user') {
+				$returnUrl = remove_query_arg('disable_user', $redirect_url);
+				$count = $this->enableMultipleUsers($user_ids);
+
+				return add_query_arg('enable_user', $count, $returnUrl);
+			}
 		}
 
 		return $redirect_url;
