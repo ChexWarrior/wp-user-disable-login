@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Chexwarrior;
 
@@ -63,8 +65,7 @@ class UserLoginDisablePlugin
 					</th>
 					<td>
 						<input type="checkbox" id="disabled" name="disabled" <?php
-						echo $this->isUserDisabled($user->ID) ? 'checked' : '' ?>
-							title="If checked user will not be able to login" required>
+																				echo $this->isUserDisabled($user->ID) ? 'checked' : '' ?> title="If checked user will not be able to login" required>
 						<p class="description">
 							If checked user will not be able to login.
 						</p>
@@ -75,7 +76,7 @@ class UserLoginDisablePlugin
 	}
 
 	// Update actual user disabled metadata and run associated functionality
-	public function updateDisabledMetadata(bool $is_disabled, int|string $user_id):int|bool
+	public function updateDisabledMetadata(bool $is_disabled, int|string $user_id): int|bool
 	{
 		// Administrators cannot be disabled
 		$user = get_userdata($user_id);
@@ -198,7 +199,7 @@ class UserLoginDisablePlugin
 		if ($column_name === 'user_disabled') {
 			$user_data = get_userdata($user_id);
 			return $user_data->get('disabled') === "1"
-			? '<strong class="file-error">Disabled</strong>' : '';
+				? '<strong class="file-error">Disabled</strong>' : '';
 		}
 
 		return $value;
@@ -238,21 +239,21 @@ class UserLoginDisablePlugin
 	public function bulkActionNotifications(): void
 	{
 		if (!empty($_REQUEST['disable_user'])) {
-			$count = intval($_REQUEST['disable_user']);
-			echo <<<HTML
+			$count = esc_html(intval($_REQUEST['disable_user']));
+		?>
 			<div class="notice notice-success is-dismissible">
-				<p>Disabled $count user(s).</p>
+				<p>Disabled <?php echo $count ?> user(s).</p>
 			</div>
-			HTML;
+		<?php
 		}
 
 		if (!empty($_REQUEST['enable_user'])) {
-			$count = intval($_REQUEST['enable_user']);
-			echo <<<HTML
+			$count = esc_html(intval($_REQUEST['enable_user']));
+		?>
 			<div class="notice notice-success is-dismissible">
-				<p>Enabled $count user(s).</p>
+				<p>Enabled <?php echo $count ?> user(s).</p>
 			</div>
-			HTML;
+		<?php
 		}
 	}
 
