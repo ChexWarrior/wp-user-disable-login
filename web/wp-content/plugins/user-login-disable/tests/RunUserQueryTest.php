@@ -23,11 +23,29 @@ class RunUserQueryTest extends TestCase
 	public function testSplitIdsFromLoginEmailsWithValidInput(array $userArgs, array $expected) {
 		$results = $this->cmdClass->splitIdsFromLoginEmails($userArgs);
 
-		$this->assertEqualsCanonicalizing($results['user_ids'], $expected['user_ids']);
-		$this->assertEqualsCanonicalizing($results['user_logins_emails'], $expected['user_logins_emails']);
+		$this->assertEqualsCanonicalizing($expected['user_ids'], $results['user_ids']);
+		$this->assertEqualsCanonicalizing( $expected['user_logins_emails'],$results['user_logins_emails']);
+	}
+
+	/** @dataProvider validFilerUsersByArgsProvider */
+	public function testFilterUsersByArgsWithValidInput(array $userInfo, array $userIds, array $userLoginsEmails, array $expected) {
+		$results = $this->cmdClass->filterUsersByArgs($userInfo, $userIds, $userLoginsEmails);
+
+		$this->assertEqualsCanonicalizing($expected, $results);
 	}
 
 	// DATA PROVIDERS
+	public function validFilerUsersByArgsProvider(): array {
+		$userInfo = [];
+		$userIds = [];
+		$userLoginEmails = [];
+		$expected = [];
+
+		return [
+			[$userInfo, $userIds, $userLoginEmails, $expected],
+		];
+	}
+
 	public function validUserArgsProvider(): array {
 		$userArgs = [
 			'13',
