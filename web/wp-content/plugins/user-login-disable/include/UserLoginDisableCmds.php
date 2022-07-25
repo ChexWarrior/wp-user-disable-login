@@ -13,19 +13,6 @@ class UserLoginDisableCmds
 		$this->userLoginDisable = $userLoginDisable;
 	}
 
-	public function verifyUserIds(array $args): void
-	{
-		if (!is_array($args) || empty($args)) {
-			WP_CLI::error("Must pass array of user ids!");
-		}
-
-		foreach ($args as $arg) {
-			if (intval($arg) === 0 || $arg < 1) {
-				WP_CLI::error('User ids must be positive integers!');
-			}
-		}
-	}
-
 	/**
 	 * Enables users
 	 *
